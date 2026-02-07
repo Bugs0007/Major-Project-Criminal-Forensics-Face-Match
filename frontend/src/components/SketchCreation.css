@@ -1,0 +1,38 @@
+.sketch-creation {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.method-selector {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.method-selector button {
+  padding: 1rem 2rem;
+  border: 2px solid #9c27b0;
+  background: white;
+  color: #9c27b0;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.method-selector button:hover {
+  background: #9c27b0;
+  color: white;
+}
+
+.method-selector button.active {
+  background: #9c27b0;
+  color: white;
+  box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+}
+
+.method-content {
+  margin-top: 2rem;
+}
