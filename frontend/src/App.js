@@ -9,8 +9,11 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>Face Matching System</h1>
-        <p>Upload portraits and search for matching faces</p>
+        <h1>Criminal Forensics</h1>
+        <p>
+          Advanced facial recognition system for criminal identification and
+          investigative support
+        </p>
       </header>
 
       <nav className="app-nav">
@@ -33,9 +36,9 @@ function App() {
         {activeTab === "upload" && <FaceUpload />}
       </main>
 
-      <footer className="app-footer">
+      {/* <footer className="app-footer">
         <p>Built with Django, React, and face_recognition library</p>
-      </footer>
+      </footer> */}
     </div>
   );
 }

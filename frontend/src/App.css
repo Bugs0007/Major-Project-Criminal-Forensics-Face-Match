@@ -10,83 +10,282 @@ body {
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(233, 69, 96, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a0a1a 100%);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(0,212,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  pointer-events: none;
+  z-index: -1;
 }
 
 .App {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.App::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.03) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(233, 69, 96, 0.03) 0%, transparent 20%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .app-header {
-  background: white;
-  padding: 2rem;
+  background: 
+    linear-gradient(135deg, 
+      rgba(26, 26, 46, 0.95) 0%, 
+      rgba(22, 33, 62, 0.95) 50%, 
+      rgba(15, 52, 96, 0.95) 100%
+    );
+  backdrop-filter: blur(20px);
+  padding: 3rem 2rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(0, 212, 255, 0.1);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, transparent, #00d4ff, transparent) 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(0, 212, 255, 0.03) 50%,
+    transparent 70%
+  );
+  animation: shimmer 8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+  50% { transform: translateX(100%) translateY(100%) rotate(30deg); }
 }
 
 .app-header h1 {
-  color: #333;
+  color: #00d4ff;
   margin-bottom: 0.5rem;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
+  text-shadow: 
+    0 0 20px rgba(0, 212, 255, 0.4),
+    0 0 40px rgba(0, 212, 255, 0.2);
+  letter-spacing: 3px;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 
+      0 0 20px rgba(0, 212, 255, 0.4),
+      0 0 40px rgba(0, 212, 255, 0.2);
+  }
+  to {
+    text-shadow: 
+      0 0 30px rgba(0, 212, 255, 0.6),
+      0 0 60px rgba(0, 212, 255, 0.3);
+  }
 }
 
 .app-header p {
-  color: #666;
-  font-size: 1.1rem;
+  color: #a8b8d8;
+  font-size: 1.2rem;
+  font-weight: 300;
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 .app-nav {
-  background: white;
-  padding: 1rem;
+  background: 
+    linear-gradient(135deg, 
+      rgba(22, 33, 62, 0.9) 0%, 
+      rgba(15, 52, 96, 0.9) 100%
+    );
+  backdrop-filter: blur(15px);
+  padding: 2rem;
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  gap: 2rem;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(45, 53, 97, 0.5);
+  position: relative;
+}
+
+.app-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 212, 255, 0.05), 
+    transparent
+  );
+  animation: navGlow 6s ease-in-out infinite;
+}
+
+@keyframes navGlow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
 .app-nav button {
-  padding: 0.75rem 2rem;
-  border: 2px solid #667eea;
-  background: white;
-  color: #667eea;
+  padding: 1rem 2.5rem;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 153, 204, 0.1) 100%),
+    linear-gradient(135deg, #00d4ff, #0099cc);
+  background-clip: padding-box, border-box;
+  background-origin: border-box;
+  color: #00d4ff;
   font-size: 1rem;
-  font-weight: 600;
-  border-radius: 25px;
+  font-weight: 700;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.app-nav button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 212, 255, 0.3), 
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.app-nav button:hover::before {
+  left: 100%;
 }
 
 .app-nav button:hover {
-  background: #667eea;
-  color: white;
+  background: 
+    linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 153, 204, 0.2) 100%),
+    linear-gradient(135deg, #00d4ff, #0099cc);
+  box-shadow: 
+    0 8px 25px rgba(0, 212, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) scale(1.05);
 }
 
 .app-nav button.active {
-  background: #667eea;
-  color: white;
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  background: 
+    linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #1a1a2e;
+  box-shadow: 
+    0 10px 30px rgba(0, 212, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.app-nav button.active::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00d4ff, #00ffff, #00d4ff);
+  border-radius: 32px;
+  z-index: -1;
+  animation: activeGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes activeGlow {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
 }
 
 .app-main {
   flex: 1;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 3rem 2rem;
+  background: 
+    radial-gradient(ellipse at top, rgba(0, 212, 255, 0.02) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(15, 15, 30, 0.3) 0%, rgba(26, 26, 46, 0.1) 100%);
+  position: relative;
+  min-height: calc(100vh - 200px);
+}
+
+.app-main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.01) 0%, transparent 25%),
+    radial-gradient(circle at 75% 75%, rgba(233, 69, 96, 0.01) 0%, transparent 25%);
+  pointer-events: none;
 }
 
 .app-footer {
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
+  background: 
+    linear-gradient(135deg, #0a0a1a 0%, #16213e 100%);
+  color: #a8b8d8;
   text-align: center;
-  padding: 1.5rem;
+  padding: 2rem;
   margin-top: auto;
+  border-top: 1px solid rgba(45, 53, 97, 0.5);
+  box-shadow: 
+    0 -8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(0, 212, 255, 0.1);
 }
 
 .app-footer p {
   margin: 0;
-  opacity: 0.8;
+  opacity: 0.7;
+  font-weight: 300;
 }
 
 @media (max-width: 768px) {

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { faceAPI } from "../services/api";
-import ResultsGrid from "./ResultsGrid";
+import ImageCard from "./ImageCard";
 import "./FaceSearch.css";
 
 const FaceSearch = () => {
@@ -10,10 +10,6 @@ const FaceSearch = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
-  const [searchOptions, setSearchOptions] = useState({
-    min_similarity: 0,
-    max_results: 10,
-  });
 
   const onDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -25,6 +21,12 @@ const FaceSearch = () => {
     }
   };
 
+  useEffect(() => {
+    if (selectedFile) {
+      performSearch();
+    }
+  }, [selectedFile]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -33,7 +35,7 @@ const FaceSearch = () => {
     multiple: false,
   });
 
-  const handleSearch = async () => {
+  const performSearch = async () => {
     if (!selectedFile) {
       setError("Please select an image first");
       return;
@@ -44,7 +46,10 @@ const FaceSearch = () => {
     setResults(null);
 
     try {
-      const result = await faceAPI.searchFace(selectedFile, searchOptions);
+      const result = await faceAPI.searchFace(selectedFile, {
+        min_similarity: 0,
+        max_results: 1,
+      });
       setResults(result);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to search faces");
@@ -77,59 +82,40 @@ const FaceSearch = () => {
         )}
       </div>
 
-      {selectedFile && (
-        <div className="search-options">
-          <label>
-            Minimum Similarity (%):
-            <input
-              type="number"
-              min="0"
-              max="100"
-              value={searchOptions.min_similarity}
-              onChange={(e) =>
-                setSearchOptions({
-                  ...searchOptions,
-                  min_similarity: parseFloat(e.target.value),
-                })
-              }
-            />
-          </label>
+      {error && <div className="error-message">{error}</div>}
 
-          <label>
-            Max Results:
-            <input
-              type="number"
-              min="1"
-              max="50"
-              value={searchOptions.max_results}
-              onChange={(e) =>
-                setSearchOptions({
-                  ...searchOptions,
-                  max_results: parseInt(e.target.value),
-                })
-              }
-            />
-          </label>
+      {searching && (
+        <div className="search-container">
+          <div className="searching-animation">
+            <div className="scanning-lines"></div>
+            <p>Scanning faces...</p>
+          </div>
         </div>
       )}
 
-      {error && <div className="error-message">{error}</div>}
-
-      <button
-        onClick={handleSearch}
-        disabled={!selectedFile || searching}
-        className="search-button"
-      >
-        {searching ? "Searching..." : "Search Faces"}
-      </button>
-
-      {results && (
+      {results && results.results.length > 0 && !searching && (
         <div className="search-results">
-          <h3>
-            Found {results.matches_found} match
-            {results.matches_found !== 1 ? "es" : ""}
-          </h3>
-          <ResultsGrid results={results.results} />
+          <div className="comparison-container">
+            <div className="uploaded-image-section">
+              <h3>Uploaded Image</h3>
+              <img src={previewUrl} alt="Uploaded" className="comparison-image" />
+            </div>
+            
+            <div className="divider"></div>
+            
+            <div className="match-result-section">
+              <h3>Top Match</h3>
+              <ImageCard result={results.results[0]} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {results && results.results.length === 0 && !searching && (
+        <div className="search-results">
+          <div className="no-match-message">
+            <p>No matches found in the database</p>
+          </div>
         </div>
       )}
     </div>
