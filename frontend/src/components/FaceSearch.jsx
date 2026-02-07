@@ -98,11 +98,15 @@ const FaceSearch = () => {
           <div className="comparison-container">
             <div className="uploaded-image-section">
               <h3>Uploaded Image</h3>
-              <img src={previewUrl} alt="Uploaded" className="comparison-image" />
+              <img
+                src={previewUrl}
+                alt="Uploaded"
+                className="comparison-image"
+              />
             </div>
-            
+
             <div className="divider"></div>
-            
+
             <div className="match-result-section">
               <h3>Top Match</h3>
               <ImageCard result={results.results[0]} />
