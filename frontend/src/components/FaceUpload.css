@@ -2,36 +2,45 @@
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid #2d3561;
 }
 
 .face-upload h2 {
   margin-top: 0;
-  color: #333;
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  font-size: 1.8rem;
+  letter-spacing: 1px;
 }
 
 .dropzone {
-  border: 2px dashed #ccc;
+  border: 2px dashed #00d4ff;
   border-radius: 8px;
   padding: 3rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 1.5rem;
+  background: rgba(0, 212, 255, 0.05);
+  color: #a8b8d8;
 }
 
 .dropzone:hover,
 .dropzone.active {
-  border-color: #4caf50;
-  background-color: #f0f8f0;
+  border-color: #00d4ff;
+  background-color: rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
 }
 
 .preview-image {
   max-width: 100%;
   max-height: 300px;
-  border-radius: 4px;
+  border-radius: 8px;
+  border: 2px solid #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .metadata-form {
@@ -44,44 +53,59 @@
 .metadata-form input,
 .metadata-form textarea {
   padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #2d3561;
+  border-radius: 6px;
   font-size: 1rem;
   font-family: inherit;
+  background: rgba(15, 15, 30, 0.5);
+  color: #a8b8d8;
+}
+
+.metadata-form input::placeholder,
+.metadata-form textarea::placeholder {
+  color: #5a6a8a;
 }
 
 .metadata-form input:focus,
 .metadata-form textarea:focus {
   outline: none;
-  border-color: #4caf50;
+  border-color: #00d4ff;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+  background: rgba(15, 15, 30, 0.7);
 }
 
 .upload-button {
   width: 100%;
   padding: 1rem;
-  background-color: #4caf50;
-  color: white;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #1a1a2e;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
 }
 
 .upload-button:hover:not(:disabled) {
-  background-color: #45a049;
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 .upload-button:disabled {
-  background-color: #ccc;
+  background: #555;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .error-message {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: rgba(233, 69, 96, 0.2);
+  color: #ff6b7a;
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
   margin-bottom: 1rem;
+  border: 1px solid #e94560;
 }
