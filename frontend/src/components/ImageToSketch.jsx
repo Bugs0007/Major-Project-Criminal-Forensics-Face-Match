@@ -1,38 +1,22 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { faceAPI } from "../services/api";
 import "./ImageToSketch.css";
 
+const AUTO_SKETCH_OPTIONS = Object.freeze({
+  method: "pencil",
+  is_blurry: true,
+  enhance_gan: true,
+  super_resolution: true,
+});
+
 const ImageToSketch = ({ onSketchCreated }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [sketchUrl, setSketchUrl] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
-  const [options, setOptions] = useState({
-    method: "adaptive",
-    is_blurry: false,
-    enhance_gan: false,
-  });
 
-  const onDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      setSketchUrl(null);
-      setError(null);
-    }
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"] },
-    multiple: false,
-  });
-
-  const handleGenerateSketch = async () => {
-    if (!selectedFile) {
+  const generateAndSearchSketch = async (file) => {
+    if (!file) {
       setError("Please select an image first");
       return;
     }
@@ -42,10 +26,11 @@ const ImageToSketch = ({ onSketchCreated }) => {
 
     try {
       const formData = new FormData();
-      formData.append("image", selectedFile);
-      formData.append("method", options.method);
-      formData.append("is_blurry", options.is_blurry);
-      formData.append("enhance_gan", options.enhance_gan);
+      formData.append("image", file);
+      formData.append("method", AUTO_SKETCH_OPTIONS.method);
+      formData.append("is_blurry", AUTO_SKETCH_OPTIONS.is_blurry);
+      formData.append("enhance_gan", AUTO_SKETCH_OPTIONS.enhance_gan);
+      formData.append("super_resolution", AUTO_SKETCH_OPTIONS.super_resolution);
       formData.append("get_encoding", "true");
 
       const response = await fetch(
@@ -63,6 +48,7 @@ const ImageToSketch = ({ onSketchCreated }) => {
       const data = await response.json();
       setSketchUrl(data.sketch_url);
 
+      // Immediately pass generated sketch to parent to switch tab and run search.
       if (onSketchCreated) {
         onSketchCreated(data);
       }
@@ -74,16 +60,26 @@ const ImageToSketch = ({ onSketchCreated }) => {
     }
   };
 
-  const handleUseForSearch = () => {
-    if (sketchUrl && onSketchCreated) {
-      onSketchCreated({ sketch_url: sketchUrl });
+  const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setPreviewUrl(URL.createObjectURL(file));
+      setSketchUrl(null);
+      setError(null);
+      generateAndSearchSketch(file);
     }
   };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"] },
+    multiple: false,
+  });
 
   return (
     <div className="image-to-sketch">
       <h2>Image to Sketch</h2>
-      <p>Upload a photo (even blurry ones) and convert it to a sketch</p>
+      <p>Upload a photo and we will automatically generate a sketch and search the database.</p>
 
       <div
         {...getRootProps()}
@@ -101,57 +97,9 @@ const ImageToSketch = ({ onSketchCreated }) => {
         )}
       </div>
 
-      {selectedFile && (
-        <div className="sketch-options">
-          <h3>Sketch Options</h3>
-
-          <label>
-            <span>Sketch Method:</span>
-            <select
-              value={options.method}
-              onChange={(e) =>
-                setOptions({ ...options, method: e.target.value })
-              }
-            >
-              <option value="adaptive">Adaptive (Best Quality)</option>
-              <option value="pencil">Pencil Sketch</option>
-              <option value="edge">Edge Detection</option>
-            </select>
-          </label>
-
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={options.is_blurry}
-              onChange={(e) =>
-                setOptions({ ...options, is_blurry: e.target.checked })
-              }
-            />
-            <span>Image is blurry (apply deblurring)</span>
-          </label>
-
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={options.enhance_gan}
-              onChange={(e) =>
-                setOptions({ ...options, enhance_gan: e.target.checked })
-              }
-            />
-            <span>Enhance with AI (slower, higher quality)</span>
-          </label>
-        </div>
-      )}
-
       {error && <div className="error-message">{error}</div>}
 
-      <button
-        onClick={handleGenerateSketch}
-        disabled={!selectedFile || processing}
-        className="generate-button"
-      >
-        {processing ? "Generating Sketch..." : "Generate Sketch"}
-      </button>
+      {processing && <div className="success-message">Generating sketch and searching database...</div>}
 
       {sketchUrl && (
         <div className="sketch-result">
@@ -165,15 +113,6 @@ const ImageToSketch = ({ onSketchCreated }) => {
               <img src={sketchUrl} alt="Sketch" />
               <p>Sketch</p>
             </div>
-          </div>
-
-          <div className="result-actions">
-            <a href={sketchUrl} download className="download-button">
-              Download Sketch
-            </a>
-            <button onClick={handleUseForSearch} className="use-button">
-              Use for Face Search
-            </button>
           </div>
         </div>
       )}
