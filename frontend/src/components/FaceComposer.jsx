@@ -33,6 +33,8 @@ const FaceComposer = ({ onFaceComposed }) => {
   const [ganStep, setGanStep] = useState(0);
   const [error, setError] = useState(null);
   const ganInterval = useRef(null);
+  const pendingResult = useRef(null);
+  const apiDone = useRef(false);
 
   useEffect(() => {
     loadFeatureLibrary();
@@ -45,13 +47,27 @@ const FaceComposer = ({ onFaceComposed }) => {
       return;
     }
     setGanStep(0);
+    apiDone.current = false;
+    pendingResult.current = null;
     ganInterval.current = setInterval(() => {
-      setGanStep((prev) =>
-        prev < GAN_STEPS.length - 1 ? prev + 1 : prev
-      );
+      setGanStep((prev) => {
+        if (prev < GAN_STEPS.length - 1) return prev + 1;
+        // We're at the last step (accepted). If API is done, reveal result.
+        if (apiDone.current) {
+          clearInterval(ganInterval.current);
+          setTimeout(() => {
+            if (pendingResult.current) {
+              setComposedSketchUrl(pendingResult.current.sketch_url);
+              if (onFaceComposed) onFaceComposed(pendingResult.current);
+            }
+            setComposing(false);
+          }, 1500); // Show "accepted" message for 1.5s before revealing
+        }
+        return prev;
+      });
     }, 3500);
     return () => clearInterval(ganInterval.current);
-  }, [composing]);
+  }, [composing, onFaceComposed]);
 
   const loadFeatureLibrary = async () => {
     try {
@@ -129,12 +145,12 @@ const FaceComposer = ({ onFaceComposed }) => {
       }
 
       const data = await response.json();
-      setComposedSketchUrl(data.sketch_url);
-      if (onFaceComposed) onFaceComposed(data);
+      // Store result but don't reveal yet — let GAN animation finish
+      pendingResult.current = data;
+      apiDone.current = true;
     } catch (err) {
       setError(err.message || "Failed to generate face");
       console.error("Face generation error:", err);
-    } finally {
       setComposing(false);
     }
   };
@@ -330,7 +346,7 @@ const FaceComposer = ({ onFaceComposed }) => {
                         }}
                       />
                     </div>
-                    <p>{feature.name}</p>
+                    <span className="feature-label">{feature.name}</span>
                   </div>
                 ))}
               </div>
