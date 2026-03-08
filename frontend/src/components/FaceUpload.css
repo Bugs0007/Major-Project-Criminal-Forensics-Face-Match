@@ -1,84 +1,88 @@
+﻿/* =================================================================
+   FaceUpload - Dark Glass Theme with Animations (Refined)
+   ================================================================= */
+
 .face-upload {
   max-width: 700px;
   margin: 2rem auto;
   padding: 3rem;
-  background: linear-gradient(
-    135deg,
-    rgba(22, 33, 62, 0.8) 0%,
-    rgba(15, 52, 96, 0.8) 50%,
-    rgba(10, 10, 26, 0.8) 100%
-  );
+  background: linear-gradient(135deg, rgba(28,28,40,0.85) 0%, rgba(35,35,50,0.85) 50%, rgba(18,18,24,0.85) 100%);
   backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(0, 212, 255, 0.1),
-    0 0 0 1px rgba(0, 212, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(245,158,11,0.1), 0 0 0 1px rgba(245,158,11,0.08);
   border: 1px solid transparent;
   position: relative;
   overflow: hidden;
-  animation: slideInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: uploadSlideIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes uploadSlideIn {
+  from { opacity: 0; transform: translateY(60px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .face-upload::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background:
-    radial-gradient(
-      circle at 30% 30%,
-      rgba(0, 212, 255, 0.05) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 70% 70%,
-      rgba(233, 69, 96, 0.03) 0%,
-      transparent 50%
-    );
+    radial-gradient(circle at 20% 20%, rgba(245,158,11,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(248,113,113,0.02) 0%, transparent 50%);
   pointer-events: none;
+}
+
+.face-upload::after {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(245,158,11,0.02) 50%, transparent 60%);
+  animation: cardShimmer 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cardShimmer {
+  0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+  50% { transform: translateX(100%) translateY(100%) rotate(30deg); }
 }
 
 .face-upload h2 {
   margin-top: 0;
   margin-bottom: 2rem;
-  color: #00d4ff;
-  text-shadow:
-    0 0 20px rgba(0, 212, 255, 0.3),
-    0 0 40px rgba(0, 212, 255, 0.1);
+  color: #f59e0b;
+  text-shadow: 0 0 20px rgba(245,158,11,0.3), 0 0 40px rgba(245,158,11,0.1);
   font-size: 2rem;
   letter-spacing: 2px;
   text-align: center;
   position: relative;
   z-index: 1;
   font-weight: 800;
+  animation: uploadTitleIn 0.6s ease-out 0.2s both;
 }
 
-.dropzone {
-  border: 2px dashed transparent;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(0, 212, 255, 0.1) 0%,
-      rgba(0, 153, 204, 0.1) 100%
-    ),
-    linear-gradient(135deg, #00d4ff, #0099cc);
+@keyframes uploadTitleIn {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.face-upload h2::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+  border-radius: 2px;
+}
+
+.face-upload .dropzone {
+  border: 3px dashed transparent;
+  background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.08) 100%), linear-gradient(135deg, #f59e0b, #d97706);
   background-clip: padding-box, border-box;
   background-origin: border-box;
-  border-radius: 15px;
+  border-radius: 20px;
   padding: 4rem 2rem;
   text-align: center;
   cursor: pointer;
@@ -87,72 +91,46 @@
   color: #a8b8d8;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
-.dropzone::before {
+.face-upload .dropzone::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 212, 255, 0.2),
-    transparent
-  );
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.15), transparent);
   transition: left 0.6s ease;
 }
 
-.dropzone:hover::before,
-.dropzone.active::before {
-  left: 100%;
+.face-upload .dropzone:hover::before,
+.face-upload .dropzone.active::before { left: 100%; }
+
+.face-upload .dropzone:hover,
+.face-upload .dropzone.active {
+  background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(217,119,6,0.15) 100%), linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 20px 40px rgba(245,158,11,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: translateY(-6px) scale(1.01);
 }
 
-.dropzone:hover,
-.dropzone.active {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(0, 212, 255, 0.15) 0%,
-      rgba(0, 153, 204, 0.15) 100%
-    ),
-    linear-gradient(135deg, #00d4ff, #0099cc);
-  box-shadow:
-    0 15px 35px rgba(0, 212, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform: translateY(-5px);
-}
-
-.preview-image {
+.face-upload .preview-image {
   max-width: 100%;
   max-height: 350px;
-  border-radius: 12px;
-  border: 3px solid #00d4ff;
-  box-shadow:
-    0 0 30px rgba(0, 212, 255, 0.4),
-    0 10px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  border: 3px solid #f59e0b;
+  box-shadow: 0 0 30px rgba(245,158,11,0.4), 0 10px 25px rgba(0,0,0,0.3);
   transition: all 0.3s ease;
-  animation: imageAppear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: uploadImgAppear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes imageAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.8) rotateY(180deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) rotateY(0deg);
-  }
+@keyframes uploadImgAppear {
+  from { opacity: 0; transform: scale(0.85) rotateY(15deg); }
+  to { opacity: 1; transform: scale(1) rotateY(0deg); }
 }
 
-.preview-image:hover {
+.face-upload .preview-image:hover {
   transform: scale(1.02);
-  box-shadow:
-    0 0 40px rgba(0, 212, 255, 0.6),
-    0 15px 35px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 40px rgba(245,158,11,0.6), 0 15px 35px rgba(0,0,0,0.4);
 }
 
 .metadata-form {
@@ -160,39 +138,28 @@
   flex-direction: column;
   gap: 1.5rem;
   margin-bottom: 2rem;
-  animation: formSlideIn 0.8s ease-out 0.3s both;
+  position: relative;
+  z-index: 1;
+  animation: metaFormSlide 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
 }
 
-@keyframes formSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+@keyframes metaFormSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .metadata-form input,
 .metadata-form textarea {
   padding: 1rem 1.5rem;
   border: 2px solid transparent;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(15, 15, 30, 0.8) 0%,
-      rgba(26, 26, 46, 0.8) 100%
-    ),
-    linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 153, 204, 0.2));
+  background: linear-gradient(135deg, rgba(15,15,30,0.8) 0%, rgba(26,26,46,0.8) 100%), linear-gradient(135deg, rgba(245,158,11,0.2), rgba(217,119,6,0.2));
   background-clip: padding-box, border-box;
   background-origin: border-box;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1rem;
   font-family: inherit;
   color: #e0e6ed;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
 }
 
 .metadata-form input::placeholder,
@@ -204,63 +171,43 @@
 .metadata-form input:focus,
 .metadata-form textarea:focus {
   outline: none;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(15, 15, 30, 0.9) 0%,
-      rgba(26, 26, 46, 0.9) 100%
-    ),
-    linear-gradient(135deg, #00d4ff, #0099cc);
-  box-shadow:
-    0 0 25px rgba(0, 212, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(15,15,30,0.9) 0%, rgba(26,26,46,0.9) 100%), linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0 25px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
   transform: translateY(-2px);
 }
 
 .upload-button {
   width: 100%;
   padding: 1.2rem;
-  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #007aa3 100%);
-  color: #0a0a1a;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #007aa3 100%);
+  color: #121218;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 1.1rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   text-transform: uppercase;
   letter-spacing: 2px;
-  box-shadow:
-    0 8px 25px rgba(0, 212, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 25px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .upload-button::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   transition: left 0.6s ease;
 }
 
-.upload-button:hover::before {
-  left: 100%;
-}
+.upload-button:hover::before { left: 100%; }
 
 .upload-button:hover:not(:disabled) {
-  box-shadow:
-    0 12px 35px rgba(0, 212, 255, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 35px rgba(245,158,11,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
   transform: translateY(-3px) scale(1.02);
 }
 
@@ -269,36 +216,35 @@
 }
 
 .upload-button:disabled {
-  background: linear-gradient(135deg, #555 0%, #333 100%);
+  background: linear-gradient(135deg, #444 0%, #333 100%);
+  color: #777;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
 }
 
-.error-message {
-  background: linear-gradient(
-    135deg,
-    rgba(233, 69, 96, 0.15) 0%,
-    rgba(255, 107, 122, 0.15) 100%
-  );
+.face-upload .error-message {
+  background: linear-gradient(135deg, rgba(248,113,113,0.15) 0%, rgba(255,107,122,0.15) 100%);
   color: #ff6b7a;
   padding: 1.2rem;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(233, 69, 96, 0.3);
-  box-shadow: 0 4px 15px rgba(233, 69, 96, 0.2);
-  animation: errorShake 0.5s ease-in-out;
+  border: 1px solid rgba(248,113,113,0.3);
+  box-shadow: 0 4px 15px rgba(248,113,113,0.2);
+  animation: uploadErrorShake 0.5s ease-in-out;
+  position: relative;
+  z-index: 1;
 }
 
-@keyframes errorShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  75% {
-    transform: translateX(5px);
-  }
+@keyframes uploadErrorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
 }
+
+
+
+
+
+
