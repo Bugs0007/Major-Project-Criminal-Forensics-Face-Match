@@ -16,44 +16,48 @@
 
 .composer-layout {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
+/* ---- Feature selectors (right panel) ---- */
 .feature-selectors {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .feature-category {
   background: white;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 8px;
 }
 
 .feature-category h3 {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   color: #555;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .feature-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .feature-option {
   cursor: pointer;
   text-align: center;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  width: 90px;
 }
 
 .feature-option:hover {
@@ -68,72 +72,308 @@
 }
 
 .feature-thumbnail {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 0.5rem;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 0.4rem;
   background: #f5f5f5;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  color: #999;
+  overflow: hidden;
+  padding: 0.2rem;
+}
+
+.feature-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .feature-option.selected .feature-thumbnail {
   background: #7b1fa2;
-  color: white;
 }
 
 .feature-option p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
+/* ---- Preview panel (left) ---- */
 .composer-preview {
   background: white;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 8px;
   position: sticky;
-  top: 2rem;
+  top: 1rem;
   height: fit-content;
 }
 
-.composer-preview h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  color: #333;
-}
-
-.preview-canvas {
+.preview-area {
   width: 100%;
-  aspect-ratio: 1;
-  background: #f5f5f5;
+  min-height: 360px;
+  background: #fafafa;
+  border: 2px dashed #d0d0d0;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
   overflow: hidden;
 }
 
-.preview-canvas img {
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.preview-canvas p {
-  color: #999;
+.canvas-hint {
+  color: #bbb;
   text-align: center;
   padding: 2rem;
+  font-size: 0.95rem;
 }
 
+/* ---- Sketch preview (positioned feature thumbnails) ---- */
+.sketch-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+}
+
+.preview-feature {
+  position: absolute;
+  object-fit: contain;
+  opacity: 0.85;
+  filter: grayscale(30%);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* ---- GAN Processing Animation ---- */
+.gan-processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 2rem 1.5rem;
+  width: 100%;
+}
+
+/* -- Generator vs Discriminator diagram -- */
+.gan-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 380px;
+}
+
+.gan-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1rem;
+  border: 3px solid #bbb;
+  border-radius: 12px;
+  background: #f5f5f5;
+  min-width: 90px;
+  transition: all 0.4s ease;
+}
+
+.gan-node span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  transition: color 0.4s ease;
+}
+
+.gan-node-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  background: #bbb;
+  transition: all 0.4s ease;
+}
+
+/* active states */
+.gan-node.generator.active {
+  border-color: #4caf50;
+  background: #e8f5e9;
+  box-shadow: 0 0 18px rgba(76, 175, 80, 0.35);
+}
+.gan-node.generator.active .gan-node-icon {
+  background: #4caf50;
+}
+.gan-node.generator.active span {
+  color: #2e7d32;
+}
+
+.gan-node.discriminator.active {
+  border-color: #f44336;
+  background: #ffebee;
+  box-shadow: 0 0 18px rgba(244, 67, 54, 0.35);
+}
+.gan-node.discriminator.active .gan-node-icon {
+  background: #f44336;
+}
+.gan-node.discriminator.active span {
+  color: #c62828;
+}
+
+/* accepted (final) state */
+.gan-node.done {
+  border-color: #9c27b0;
+  background: #f3e5f5;
+  box-shadow: 0 0 14px rgba(156, 39, 176, 0.3);
+}
+.gan-node.done .gan-node-icon {
+  background: #9c27b0;
+}
+.gan-node.done span {
+  color: #7b1fa2;
+}
+
+/* -- Arrows between G and D -- */
+.gan-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 80px;
+}
+
+.gan-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+
+.gan-arrow.active {
+  opacity: 1;
+}
+
+.arrow-label {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #999;
+}
+
+.arrow-line {
+  width: 60px;
+  height: 3px;
+  border-radius: 2px;
+  background: #ccc;
+  position: relative;
+}
+
+/* forward arrow → */
+.arrow-forward .arrow-line::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: -3px;
+  border: 5px solid transparent;
+  border-left-color: #ccc;
+}
+.arrow-forward.active .arrow-line {
+  background: #4caf50;
+  animation: pulseGreen 1s ease infinite;
+}
+.arrow-forward.active .arrow-line::after {
+  border-left-color: #4caf50;
+}
+
+/* backward arrow ← */
+.arrow-backward .arrow-line::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  border: 5px solid transparent;
+  border-right-color: #ccc;
+}
+.arrow-backward.active .arrow-line {
+  background: #f44336;
+  animation: pulseRed 1s ease infinite;
+}
+.arrow-backward.active .arrow-line::before {
+  border-right-color: #f44336;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulseRed {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* -- Step text & progress bar -- */
+.gan-step-text {
+  color: #555;
+  font-size: 0.9rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  min-height: 1.4em;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gan-progress-bar {
+  width: 80%;
+  max-width: 280px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.gan-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9c27b0, #ce93d8);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+/* ---- Result image ---- */
+.composed-result {
+  width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ---- Buttons ---- */
 .composer-actions {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .compose-button,
@@ -145,7 +385,7 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .compose-button {
@@ -171,6 +411,36 @@
   background-color: #e0e0e0;
 }
 
+.result-actions {
+  margin-top: 0.75rem;
+}
+
+.use-button {
+  width: 100%;
+  padding: 0.65rem;
+  border: 2px solid #9c27b0;
+  background: transparent;
+  color: #9c27b0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.use-button:hover {
+  background: #f3e5f5;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
 .loading {
   text-align: center;
   padding: 3rem;
@@ -186,7 +456,22 @@
     position: static;
   }
 
-  .feature-options {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  .feature-selectors {
+    max-height: none;
+  }
+
+  .gan-diagram {
+    max-width: 100%;
+  }
+
+  .gan-node {
+    min-width: 70px;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .gan-node-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
   }
 }

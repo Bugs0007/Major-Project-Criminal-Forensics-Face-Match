@@ -1,31 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./FaceComposer.css";
+
+/* ── GAN processing steps ────────────────────────────────────── */
+const GAN_STEPS = [
+  { label: "Encoding selected features into latent vector...", phase: "encode" },
+  { label: "Generator producing initial sketch...", phase: "generator" },
+  { label: "Discriminator evaluating realism...", phase: "discriminator" },
+  { label: "Generator refining details (adversarial pass 2)...", phase: "generator" },
+  { label: "Discriminator re-evaluating...", phase: "discriminator" },
+  { label: "Generator converging on final output...", phase: "generator" },
+  { label: "Discriminator accepted — sketch is realistic!", phase: "accepted" },
+];
+
+/* ── Feature preview layout ──────────────────────────────────── */
+const PREVIEW_POSITIONS = {
+  face_shapes: { top: "0%", left: "10%", width: "80%", height: "90%", z: 1 },
+  hair:        { top: "0%", left: "12%", width: "76%", height: "30%", z: 2 },
+  ears:        { top: "28%", left: "4%", width: "92%", height: "22%", z: 3 },
+  eyebrows:    { top: "26%", left: "16%", width: "68%", height: "10%", z: 4 },
+  eyes:        { top: "32%", left: "16%", width: "68%", height: "14%", z: 5 },
+  noses:       { top: "46%", left: "34%", width: "32%", height: "22%", z: 6 },
+  mouths:      { top: "64%", left: "24%", width: "52%", height: "14%", z: 7 },
+};
+
+const LAYER_ORDER = ["face_shapes", "hair", "ears", "eyebrows", "eyes", "noses", "mouths"];
 
 const FaceComposer = ({ onFaceComposed }) => {
   const [featureLibrary, setFeatureLibrary] = useState(null);
-  const [selectedFeatures, setSelectedFeatures] = useState({
-    face_shape: null,
-    eyes: null,
-    nose: null,
-    mouth: null,
-    eyebrows: null,
-  });
+  const [selectedFeatures, setSelectedFeatures] = useState({});
   const [composedSketchUrl, setComposedSketchUrl] = useState(null);
   const [composing, setComposing] = useState(false);
+  const [ganStep, setGanStep] = useState(0);
   const [error, setError] = useState(null);
-  const [enhanceGAN, setEnhanceGAN] = useState(false);
+  const ganInterval = useRef(null);
 
   useEffect(() => {
     loadFeatureLibrary();
   }, []);
 
+  // Cycle through GAN steps while composing
+  useEffect(() => {
+    if (!composing) {
+      if (ganInterval.current) clearInterval(ganInterval.current);
+      return;
+    }
+    setGanStep(0);
+    ganInterval.current = setInterval(() => {
+      setGanStep((prev) =>
+        prev < GAN_STEPS.length - 1 ? prev + 1 : prev
+      );
+    }, 3500);
+    return () => clearInterval(ganInterval.current);
+  }, [composing]);
+
   const loadFeatureLibrary = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8000/api/faces/sketch/feature-library/",
+        "http://localhost:8000/api/faces/sketch/feature-library/"
       );
       const data = await response.json();
+
+      const cacheBuster = Date.now();
+      Object.keys(data).forEach((featureType) => {
+        data[featureType].forEach((feature) => {
+          feature.thumbnail = `${feature.thumbnail}?t=${cacheBuster}`;
+        });
+      });
+
       setFeatureLibrary(data);
+
+      const initialSelection = {};
+      Object.keys(data).forEach((ft) => {
+        initialSelection[ft] = null;
+      });
+      setSelectedFeatures(initialSelection);
     } catch (err) {
       console.error("Failed to load feature library:", err);
       setError("Failed to load facial features");
@@ -33,80 +81,228 @@ const FaceComposer = ({ onFaceComposed }) => {
   };
 
   const handleFeatureSelect = (featureType, featureId) => {
-    setSelectedFeatures({
-      ...selectedFeatures,
-      [featureType]: featureId,
-    });
-    setComposedSketchUrl(null); // Clear previous result
+    setSelectedFeatures((prev) => ({ ...prev, [featureType]: featureId }));
+    setComposedSketchUrl(null);
   };
 
-  const handleComposeFace = async () => {
-    // Check if at least some features are selected
-    const hasFeatures = Object.values(selectedFeatures).some((f) => f !== null);
+  const selectedCount = Object.values(selectedFeatures).filter(
+    (f) => f !== null
+  ).length;
 
-    if (!hasFeatures) {
+  /* ---------- find thumbnail URL ---------- */
+  const getThumbnailUrl = (featureType) => {
+    const featureId = selectedFeatures[featureType];
+    if (!featureId || !featureLibrary) return null;
+    const feature = featureLibrary[featureType]?.find(
+      (f) => f.id === featureId
+    );
+    return feature?.thumbnail || null;
+  };
+
+  /* ---------- compose ---------- */
+  const handleComposeFace = async () => {
+    if (selectedCount === 0) {
       setError("Please select at least one facial feature");
       return;
     }
 
     setComposing(true);
     setError(null);
+    setComposedSketchUrl(null);
 
     try {
       const response = await fetch(
         "http://localhost:8000/api/faces/sketch/compose-face/",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             features: selectedFeatures,
-            enhance_gan: enhanceGAN,
             get_encoding: true,
           }),
-        },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to compose face");
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to generate face");
       }
 
       const data = await response.json();
       setComposedSketchUrl(data.sketch_url);
-
-      if (onFaceComposed) {
-        onFaceComposed(data);
-      }
+      if (onFaceComposed) onFaceComposed(data);
     } catch (err) {
-      setError(err.message || "Failed to compose face");
-      console.error("Face composition error:", err);
+      setError(err.message || "Failed to generate face");
+      console.error("Face generation error:", err);
     } finally {
       setComposing(false);
     }
   };
 
   const handleReset = () => {
-    setSelectedFeatures({
-      face_shape: null,
-      eyes: null,
-      nose: null,
-      mouth: null,
-      eyebrows: null,
-    });
+    if (featureLibrary) {
+      const resetSelection = {};
+      Object.keys(featureLibrary).forEach((ft) => {
+        resetSelection[ft] = null;
+      });
+      setSelectedFeatures(resetSelection);
+    }
     setComposedSketchUrl(null);
+    setError(null);
   };
 
+  /* ---------- placed features for preview ---------- */
+  const placedFeatures = LAYER_ORDER.filter(
+    (ft) => selectedFeatures[ft] != null
+  );
+
+  /* ---------- render ---------- */
   if (!featureLibrary) {
     return <div className="loading">Loading feature library...</div>;
   }
 
+  const currentPhase = composing ? GAN_STEPS[ganStep].phase : null;
+
   return (
     <div className="face-composer">
       <h2>Build Your Face</h2>
-      <p>Select facial features to compose a sketch</p>
+      <p>
+        Select facial features below, then click <strong>Generate</strong> to
+        create a realistic sketch using GAN
+      </p>
 
       <div className="composer-layout">
+        {/* ---- Left: preview / GAN processing ---- */}
+        <div className="composer-preview">
+          <div className="preview-area">
+
+            {/* Idle — nothing selected */}
+            {!composing && !composedSketchUrl && selectedCount === 0 && (
+              <p className="canvas-hint">
+                Select features from the right panel
+              </p>
+            )}
+
+            {/* Sketch preview — features selected, not yet generated */}
+            {!composing && !composedSketchUrl && selectedCount > 0 && (
+              <div className="sketch-preview">
+                {placedFeatures.map((ft) => {
+                  const url = getThumbnailUrl(ft);
+                  const pos = PREVIEW_POSITIONS[ft];
+                  if (!url || !pos) return null;
+                  return (
+                    <img
+                      key={ft}
+                      className="preview-feature"
+                      src={url}
+                      alt={ft}
+                      style={{
+                        top: pos.top,
+                        left: pos.left,
+                        width: pos.width,
+                        height: pos.height,
+                        zIndex: pos.z,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {/* GAN processing animation */}
+            {composing && (
+              <div className="gan-processing">
+                {/* Generator vs Discriminator diagram */}
+                <div className="gan-diagram">
+                  <div className={`gan-node generator ${
+                    currentPhase === "generator" ? "active" : ""
+                  } ${currentPhase === "accepted" ? "done" : ""}`}>
+                    <div className="gan-node-icon">G</div>
+                    <span>Generator</span>
+                  </div>
+
+                  <div className="gan-flow">
+                    <div className={`gan-arrow arrow-forward ${
+                      currentPhase === "generator" ? "active" : ""
+                    }`}>
+                      <span className="arrow-label">fake image</span>
+                      <div className="arrow-line" />
+                    </div>
+                    <div className={`gan-arrow arrow-backward ${
+                      currentPhase === "discriminator" ? "active" : ""
+                    }`}>
+                      <div className="arrow-line" />
+                      <span className="arrow-label">feedback</span>
+                    </div>
+                  </div>
+
+                  <div className={`gan-node discriminator ${
+                    currentPhase === "discriminator" ? "active" : ""
+                  } ${currentPhase === "accepted" ? "done" : ""}`}>
+                    <div className="gan-node-icon">D</div>
+                    <span>Discriminator</span>
+                  </div>
+                </div>
+
+                <p className="gan-step-text" key={ganStep}>
+                  {GAN_STEPS[ganStep].label}
+                </p>
+
+                <div className="gan-progress-bar">
+                  <div
+                    className="gan-progress-fill"
+                    style={{
+                      width: `${((ganStep + 1) / GAN_STEPS.length) * 100}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Result */}
+            {!composing && composedSketchUrl && (
+              <img
+                className="composed-result"
+                src={composedSketchUrl}
+                alt="GAN Generated Face"
+              />
+            )}
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="composer-actions">
+            <button
+              onClick={handleComposeFace}
+              disabled={composing || selectedCount === 0}
+              className="compose-button"
+            >
+              {composing ? "Processing..." : "Generate with GAN"}
+            </button>
+            <button
+              onClick={handleReset}
+              disabled={composing}
+              className="reset-button"
+            >
+              Reset
+            </button>
+          </div>
+
+          {!composing && composedSketchUrl && (
+            <div className="result-actions">
+              <button
+                onClick={() =>
+                  onFaceComposed({ sketch_url: composedSketchUrl })
+                }
+                className="use-button"
+              >
+                Use for Face Search
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ---- Right: feature selectors ---- */}
         <div className="feature-selectors">
           {Object.entries(featureLibrary).map(([featureType, features]) => (
             <div key={featureType} className="feature-category">
@@ -120,67 +316,26 @@ const FaceComposer = ({ onFaceComposed }) => {
                         ? "selected"
                         : ""
                     }`}
-                    onClick={() => handleFeatureSelect(featureType, feature.id)}
+                    onClick={() =>
+                      handleFeatureSelect(featureType, feature.id)
+                    }
                   >
-                    {/* In production, show actual thumbnail */}
-                    <div className="feature-thumbnail">{feature.name}</div>
+                    <div className="feature-thumbnail">
+                      <img
+                        src={feature.thumbnail}
+                        alt={feature.name}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    </div>
                     <p>{feature.name}</p>
                   </div>
                 ))}
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="composer-preview">
-          <h3>Preview</h3>
-          <div className="preview-canvas">
-            {composedSketchUrl ? (
-              <img src={composedSketchUrl} alt="Composed Face" />
-            ) : (
-              <p>Select features to compose a face</p>
-            )}
-          </div>
-
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={enhanceGAN}
-              onChange={(e) => setEnhanceGAN(e.target.checked)}
-            />
-            <span>Enhance with AI (slower, higher quality)</span>
-          </label>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <div className="composer-actions">
-            <button
-              onClick={handleComposeFace}
-              disabled={composing}
-              className="compose-button"
-            >
-              {composing ? "Composing..." : "Compose Face"}
-            </button>
-            <button onClick={handleReset} className="reset-button">
-              Reset
-            </button>
-          </div>
-
-          {composedSketchUrl && (
-            <div className="result-actions">
-              <a href={composedSketchUrl} download className="download-button">
-                Download Sketch
-              </a>
-              <button
-                onClick={() =>
-                  onFaceComposed({ sketch_url: composedSketchUrl })
-                }
-                className="use-button"
-              >
-                Use for Face Search
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
