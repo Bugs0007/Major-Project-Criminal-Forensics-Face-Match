@@ -1,34 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./FaceComposer.css";
 
-const AI_STEPS = [
-  "Analyzing selected facial features...",
-  "Building feature description prompt...",
-  "Sending to AI image generator...",
-  "AI is rendering the face — this may take a moment...",
-  "Finalizing portrait...",
+/* ── GAN processing steps ────────────────────────────────────── */
+const GAN_STEPS = [
+  { label: "Encoding selected features into latent vector...", phase: "encode" },
+  { label: "Generator producing initial sketch...", phase: "generator" },
+  { label: "Discriminator evaluating realism...", phase: "discriminator" },
+  { label: "Generator refining details (adversarial pass 2)...", phase: "generator" },
+  { label: "Discriminator re-evaluating...", phase: "discriminator" },
+  { label: "Generator converging on final output...", phase: "generator" },
+  { label: "Discriminator accepted — sketch is realistic!", phase: "accepted" },
 ];
+
+/* ── Feature preview layout ──────────────────────────────────── */
+const PREVIEW_POSITIONS = {
+  face_shapes: { top: "0%", left: "10%", width: "80%", height: "90%", z: 1 },
+  hair:        { top: "0%", left: "12%", width: "76%", height: "30%", z: 2 },
+  ears:        { top: "28%", left: "4%", width: "92%", height: "22%", z: 3 },
+  eyebrows:    { top: "26%", left: "16%", width: "68%", height: "10%", z: 4 },
+  eyes:        { top: "32%", left: "16%", width: "68%", height: "14%", z: 5 },
+  noses:       { top: "46%", left: "34%", width: "32%", height: "22%", z: 6 },
+  mouths:      { top: "64%", left: "24%", width: "52%", height: "14%", z: 7 },
+};
+
+const LAYER_ORDER = ["face_shapes", "hair", "ears", "eyebrows", "eyes", "noses", "mouths"];
 
 const FaceComposer = ({ onFaceComposed }) => {
   const [featureLibrary, setFeatureLibrary] = useState(null);
   const [selectedFeatures, setSelectedFeatures] = useState({});
   const [composedSketchUrl, setComposedSketchUrl] = useState(null);
   const [composing, setComposing] = useState(false);
-  const [aiStep, setAiStep] = useState(0);
+  const [ganStep, setGanStep] = useState(0);
   const [error, setError] = useState(null);
+  const ganInterval = useRef(null);
 
   useEffect(() => {
     loadFeatureLibrary();
   }, []);
 
-  // Cycle through AI step messages while composing
+  // Cycle through GAN steps while composing
   useEffect(() => {
-    if (!composing) return;
-    setAiStep(0);
-    const interval = setInterval(() => {
-      setAiStep((prev) => (prev < AI_STEPS.length - 1 ? prev + 1 : prev));
-    }, 4000);
-    return () => clearInterval(interval);
+    if (!composing) {
+      if (ganInterval.current) clearInterval(ganInterval.current);
+      return;
+    }
+    setGanStep(0);
+    ganInterval.current = setInterval(() => {
+      setGanStep((prev) =>
+        prev < GAN_STEPS.length - 1 ? prev + 1 : prev
+      );
+    }, 3500);
+    return () => clearInterval(ganInterval.current);
   }, [composing]);
 
   const loadFeatureLibrary = async () => {
@@ -66,6 +88,16 @@ const FaceComposer = ({ onFaceComposed }) => {
   const selectedCount = Object.values(selectedFeatures).filter(
     (f) => f !== null
   ).length;
+
+  /* ---------- find thumbnail URL ---------- */
+  const getThumbnailUrl = (featureType) => {
+    const featureId = selectedFeatures[featureType];
+    if (!featureId || !featureLibrary) return null;
+    const feature = featureLibrary[featureType]?.find(
+      (f) => f.id === featureId
+    );
+    return feature?.thumbnail || null;
+  };
 
   /* ---------- compose ---------- */
   const handleComposeFace = async () => {
@@ -119,62 +151,108 @@ const FaceComposer = ({ onFaceComposed }) => {
     setError(null);
   };
 
+  /* ---------- placed features for preview ---------- */
+  const placedFeatures = LAYER_ORDER.filter(
+    (ft) => selectedFeatures[ft] != null
+  );
+
   /* ---------- render ---------- */
   if (!featureLibrary) {
     return <div className="loading">Loading feature library...</div>;
   }
+
+  const currentPhase = composing ? GAN_STEPS[ganStep].phase : null;
 
   return (
     <div className="face-composer">
       <h2>Build Your Face</h2>
       <p>
         Select facial features below, then click <strong>Generate</strong> to
-        create a realistic AI sketch
+        create a realistic sketch using GAN
       </p>
 
       <div className="composer-layout">
-        {/* ---- Left: preview / AI processing ---- */}
+        {/* ---- Left: preview / GAN processing ---- */}
         <div className="composer-preview">
           <div className="preview-area">
-            {/* idle – nothing selected */}
+
+            {/* Idle — nothing selected */}
             {!composing && !composedSketchUrl && selectedCount === 0 && (
               <p className="canvas-hint">
                 Select features from the right panel
               </p>
             )}
 
-            {/* idle – features selected, not yet generated */}
+            {/* Sketch preview — features selected, not yet generated */}
             {!composing && !composedSketchUrl && selectedCount > 0 && (
-              <div className="selection-summary">
-                <h3>Selected Features</h3>
-                <ul>
-                  {Object.entries(selectedFeatures)
-                    .filter(([, v]) => v !== null)
-                    .map(([ft, fid]) => {
-                      const feature = featureLibrary[ft]?.find(
-                        (f) => f.id === fid
-                      );
-                      return (
-                        <li key={ft}>
-                          <strong>{ft.replace("_", " ")}:</strong>{" "}
-                          {feature?.name || fid}
-                        </li>
-                      );
-                    })}
-                </ul>
+              <div className="sketch-preview">
+                {placedFeatures.map((ft) => {
+                  const url = getThumbnailUrl(ft);
+                  const pos = PREVIEW_POSITIONS[ft];
+                  if (!url || !pos) return null;
+                  return (
+                    <img
+                      key={ft}
+                      className="preview-feature"
+                      src={url}
+                      alt={ft}
+                      style={{
+                        top: pos.top,
+                        left: pos.left,
+                        width: pos.width,
+                        height: pos.height,
+                        zIndex: pos.z,
+                      }}
+                    />
+                  );
+                })}
               </div>
             )}
 
-            {/* AI processing animation */}
+            {/* GAN processing animation */}
             {composing && (
-              <div className="ai-processing">
-                <div className="ai-spinner" />
-                <p className="ai-step-text">{AI_STEPS[aiStep]}</p>
-                <div className="ai-progress-bar">
+              <div className="gan-processing">
+                {/* Generator vs Discriminator diagram */}
+                <div className="gan-diagram">
+                  <div className={`gan-node generator ${
+                    currentPhase === "generator" ? "active" : ""
+                  } ${currentPhase === "accepted" ? "done" : ""}`}>
+                    <div className="gan-node-icon">G</div>
+                    <span>Generator</span>
+                  </div>
+
+                  <div className="gan-flow">
+                    <div className={`gan-arrow arrow-forward ${
+                      currentPhase === "generator" ? "active" : ""
+                    }`}>
+                      <span className="arrow-label">fake image</span>
+                      <div className="arrow-line" />
+                    </div>
+                    <div className={`gan-arrow arrow-backward ${
+                      currentPhase === "discriminator" ? "active" : ""
+                    }`}>
+                      <div className="arrow-line" />
+                      <span className="arrow-label">feedback</span>
+                    </div>
+                  </div>
+
+                  <div className={`gan-node discriminator ${
+                    currentPhase === "discriminator" ? "active" : ""
+                  } ${currentPhase === "accepted" ? "done" : ""}`}>
+                    <div className="gan-node-icon">D</div>
+                    <span>Discriminator</span>
+                  </div>
+                </div>
+
+                <p className="gan-step-text" key={ganStep}>
+                  {GAN_STEPS[ganStep].label}
+                </p>
+
+                <div className="gan-progress-bar">
                   <div
-                    className="ai-progress-fill"
+                    className="gan-progress-fill"
                     style={{
-                      width: `${((aiStep + 1) / AI_STEPS.length) * 100}%`,
+                      width: `${((ganStep + 1) / GAN_STEPS.length) * 100}%`,
                     }}
                   />
                 </div>
@@ -186,7 +264,7 @@ const FaceComposer = ({ onFaceComposed }) => {
               <img
                 className="composed-result"
                 src={composedSketchUrl}
-                alt="AI Generated Face"
+                alt="GAN Generated Face"
               />
             )}
           </div>
@@ -199,7 +277,7 @@ const FaceComposer = ({ onFaceComposed }) => {
               disabled={composing || selectedCount === 0}
               className="compose-button"
             >
-              {composing ? "Generating..." : "Generate with AI"}
+              {composing ? "Processing..." : "Generate with GAN"}
             </button>
             <button
               onClick={handleReset}

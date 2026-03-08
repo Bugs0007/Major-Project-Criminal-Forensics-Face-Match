@@ -131,71 +131,207 @@
   font-size: 0.95rem;
 }
 
-/* ---- Selection summary ---- */
-.selection-summary {
-  padding: 1.5rem 2rem;
+/* ---- Sketch preview (positioned feature thumbnails) ---- */
+.sketch-preview {
+  position: relative;
   width: 100%;
+  height: 100%;
+  min-height: 360px;
 }
 
-.selection-summary h3 {
-  margin: 0 0 0.75rem;
-  color: #555;
-  font-size: 0.95rem;
+.preview-feature {
+  position: absolute;
+  object-fit: contain;
+  opacity: 0.85;
+  filter: grayscale(30%);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
-.selection-summary ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.selection-summary li {
-  padding: 0.35rem 0;
-  font-size: 0.9rem;
-  color: #444;
-  text-transform: capitalize;
-  border-bottom: 1px solid #eee;
-}
-
-.selection-summary li:last-child {
-  border-bottom: none;
-}
-
-.selection-summary li strong {
-  color: #7b1fa2;
-}
-
-/* ---- AI Processing Animation ---- */
-.ai-processing {
+/* ---- GAN Processing Animation ---- */
+.gan-processing {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 3rem 2rem;
+  gap: 1.2rem;
+  padding: 2rem 1.5rem;
   width: 100%;
 }
 
-.ai-spinner {
-  width: 64px;
-  height: 64px;
+/* -- Generator vs Discriminator diagram -- */
+.gan-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 380px;
+}
+
+.gan-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1rem;
+  border: 3px solid #bbb;
+  border-radius: 12px;
+  background: #f5f5f5;
+  min-width: 90px;
+  transition: all 0.4s ease;
+}
+
+.gan-node span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  transition: color 0.4s ease;
+}
+
+.gan-node-icon {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 5px solid #e0e0e0;
-  border-top-color: #9c27b0;
-  animation: spin 1s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  background: #bbb;
+  transition: all 0.4s ease;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+/* active states */
+.gan-node.generator.active {
+  border-color: #4caf50;
+  background: #e8f5e9;
+  box-shadow: 0 0 18px rgba(76, 175, 80, 0.35);
+}
+.gan-node.generator.active .gan-node-icon {
+  background: #4caf50;
+}
+.gan-node.generator.active span {
+  color: #2e7d32;
 }
 
-.ai-step-text {
+.gan-node.discriminator.active {
+  border-color: #f44336;
+  background: #ffebee;
+  box-shadow: 0 0 18px rgba(244, 67, 54, 0.35);
+}
+.gan-node.discriminator.active .gan-node-icon {
+  background: #f44336;
+}
+.gan-node.discriminator.active span {
+  color: #c62828;
+}
+
+/* accepted (final) state */
+.gan-node.done {
+  border-color: #9c27b0;
+  background: #f3e5f5;
+  box-shadow: 0 0 14px rgba(156, 39, 176, 0.3);
+}
+.gan-node.done .gan-node-icon {
+  background: #9c27b0;
+}
+.gan-node.done span {
+  color: #7b1fa2;
+}
+
+/* -- Arrows between G and D -- */
+.gan-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 80px;
+}
+
+.gan-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+
+.gan-arrow.active {
+  opacity: 1;
+}
+
+.arrow-label {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #999;
+}
+
+.arrow-line {
+  width: 60px;
+  height: 3px;
+  border-radius: 2px;
+  background: #ccc;
+  position: relative;
+}
+
+/* forward arrow → */
+.arrow-forward .arrow-line::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: -3px;
+  border: 5px solid transparent;
+  border-left-color: #ccc;
+}
+.arrow-forward.active .arrow-line {
+  background: #4caf50;
+  animation: pulseGreen 1s ease infinite;
+}
+.arrow-forward.active .arrow-line::after {
+  border-left-color: #4caf50;
+}
+
+/* backward arrow ← */
+.arrow-backward .arrow-line::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  border: 5px solid transparent;
+  border-right-color: #ccc;
+}
+.arrow-backward.active .arrow-line {
+  background: #f44336;
+  animation: pulseRed 1s ease infinite;
+}
+.arrow-backward.active .arrow-line::before {
+  border-right-color: #f44336;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulseRed {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* -- Step text & progress bar -- */
+.gan-step-text {
   color: #555;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-align: center;
   animation: fadeIn 0.5s ease;
   min-height: 1.4em;
+  font-weight: 500;
 }
 
 @keyframes fadeIn {
@@ -209,7 +345,7 @@
   }
 }
 
-.ai-progress-bar {
+.gan-progress-bar {
   width: 80%;
   max-width: 280px;
   height: 6px;
@@ -218,7 +354,7 @@
   overflow: hidden;
 }
 
-.ai-progress-fill {
+.gan-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #9c27b0, #ce93d8);
   border-radius: 3px;
@@ -322,5 +458,20 @@
 
   .feature-selectors {
     max-height: none;
+  }
+
+  .gan-diagram {
+    max-width: 100%;
+  }
+
+  .gan-node {
+    min-width: 70px;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .gan-node-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
   }
 }
