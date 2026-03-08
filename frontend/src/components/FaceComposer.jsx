@@ -3,10 +3,16 @@ import "./FaceComposer.css";
 
 /* ── GAN processing steps ────────────────────────────────────── */
 const GAN_STEPS = [
-  { label: "Encoding selected features into latent vector...", phase: "encode" },
+  {
+    label: "Encoding selected features into latent vector...",
+    phase: "encode",
+  },
   { label: "Generator producing initial sketch...", phase: "generator" },
   { label: "Discriminator evaluating realism...", phase: "discriminator" },
-  { label: "Generator refining details (adversarial pass 2)...", phase: "generator" },
+  {
+    label: "Generator refining details (adversarial pass 2)...",
+    phase: "generator",
+  },
   { label: "Discriminator re-evaluating...", phase: "discriminator" },
   { label: "Generator converging on final output...", phase: "generator" },
   { label: "Discriminator accepted — sketch is realistic!", phase: "accepted" },
@@ -15,15 +21,23 @@ const GAN_STEPS = [
 /* ── Feature preview layout ──────────────────────────────────── */
 const PREVIEW_POSITIONS = {
   face_shapes: { top: "0%", left: "10%", width: "80%", height: "90%", z: 1 },
-  hair:        { top: "0%", left: "12%", width: "76%", height: "30%", z: 2 },
-  ears:        { top: "28%", left: "4%", width: "92%", height: "22%", z: 3 },
-  eyebrows:    { top: "26%", left: "16%", width: "68%", height: "10%", z: 4 },
-  eyes:        { top: "32%", left: "16%", width: "68%", height: "14%", z: 5 },
-  noses:       { top: "46%", left: "34%", width: "32%", height: "22%", z: 6 },
-  mouths:      { top: "64%", left: "24%", width: "52%", height: "14%", z: 7 },
+  hair: { top: "0%", left: "12%", width: "76%", height: "30%", z: 2 },
+  ears: { top: "28%", left: "4%", width: "92%", height: "22%", z: 3 },
+  eyebrows: { top: "26%", left: "16%", width: "68%", height: "10%", z: 4 },
+  eyes: { top: "32%", left: "16%", width: "68%", height: "14%", z: 5 },
+  noses: { top: "46%", left: "34%", width: "32%", height: "22%", z: 6 },
+  mouths: { top: "64%", left: "24%", width: "52%", height: "14%", z: 7 },
 };
 
-const LAYER_ORDER = ["face_shapes", "hair", "ears", "eyebrows", "eyes", "noses", "mouths"];
+const LAYER_ORDER = [
+  "face_shapes",
+  "hair",
+  "ears",
+  "eyebrows",
+  "eyes",
+  "noses",
+  "mouths",
+];
 
 const FaceComposer = ({ onFaceComposed }) => {
   const [featureLibrary, setFeatureLibrary] = useState(null);
@@ -72,7 +86,7 @@ const FaceComposer = ({ onFaceComposed }) => {
   const loadFeatureLibrary = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8000/api/faces/sketch/feature-library/"
+        "http://localhost:8000/api/faces/sketch/feature-library/",
       );
       const data = await response.json();
 
@@ -102,7 +116,7 @@ const FaceComposer = ({ onFaceComposed }) => {
   };
 
   const selectedCount = Object.values(selectedFeatures).filter(
-    (f) => f !== null
+    (f) => f !== null,
   ).length;
 
   /* ---------- find thumbnail URL ---------- */
@@ -110,7 +124,7 @@ const FaceComposer = ({ onFaceComposed }) => {
     const featureId = selectedFeatures[featureType];
     if (!featureId || !featureLibrary) return null;
     const feature = featureLibrary[featureType]?.find(
-      (f) => f.id === featureId
+      (f) => f.id === featureId,
     );
     return feature?.thumbnail || null;
   };
@@ -136,7 +150,7 @@ const FaceComposer = ({ onFaceComposed }) => {
             features: selectedFeatures,
             get_encoding: true,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -169,7 +183,7 @@ const FaceComposer = ({ onFaceComposed }) => {
 
   /* ---------- placed features for preview ---------- */
   const placedFeatures = LAYER_ORDER.filter(
-    (ft) => selectedFeatures[ft] != null
+    (ft) => selectedFeatures[ft] != null,
   );
 
   /* ---------- render ---------- */
@@ -191,7 +205,6 @@ const FaceComposer = ({ onFaceComposed }) => {
         {/* ---- Left: preview / GAN processing ---- */}
         <div className="composer-preview">
           <div className="preview-area">
-
             {/* Idle — nothing selected */}
             {!composing && !composedSketchUrl && selectedCount === 0 && (
               <p className="canvas-hint">
@@ -230,31 +243,39 @@ const FaceComposer = ({ onFaceComposed }) => {
               <div className="gan-processing">
                 {/* Generator vs Discriminator diagram */}
                 <div className="gan-diagram">
-                  <div className={`gan-node generator ${
-                    currentPhase === "generator" ? "active" : ""
-                  } ${currentPhase === "accepted" ? "done" : ""}`}>
+                  <div
+                    className={`gan-node generator ${
+                      currentPhase === "generator" ? "active" : ""
+                    } ${currentPhase === "accepted" ? "done" : ""}`}
+                  >
                     <div className="gan-node-icon">G</div>
                     <span>Generator</span>
                   </div>
 
                   <div className="gan-flow">
-                    <div className={`gan-arrow arrow-forward ${
-                      currentPhase === "generator" ? "active" : ""
-                    }`}>
+                    <div
+                      className={`gan-arrow arrow-forward ${
+                        currentPhase === "generator" ? "active" : ""
+                      }`}
+                    >
                       <span className="arrow-label">fake image</span>
                       <div className="arrow-line" />
                     </div>
-                    <div className={`gan-arrow arrow-backward ${
-                      currentPhase === "discriminator" ? "active" : ""
-                    }`}>
+                    <div
+                      className={`gan-arrow arrow-backward ${
+                        currentPhase === "discriminator" ? "active" : ""
+                      }`}
+                    >
                       <div className="arrow-line" />
                       <span className="arrow-label">feedback</span>
                     </div>
                   </div>
 
-                  <div className={`gan-node discriminator ${
-                    currentPhase === "discriminator" ? "active" : ""
-                  } ${currentPhase === "accepted" ? "done" : ""}`}>
+                  <div
+                    className={`gan-node discriminator ${
+                      currentPhase === "discriminator" ? "active" : ""
+                    } ${currentPhase === "accepted" ? "done" : ""}`}
+                  >
                     <div className="gan-node-icon">D</div>
                     <span>Discriminator</span>
                   </div>
@@ -332,9 +353,7 @@ const FaceComposer = ({ onFaceComposed }) => {
                         ? "selected"
                         : ""
                     }`}
-                    onClick={() =>
-                      handleFeatureSelect(featureType, feature.id)
-                    }
+                    onClick={() => handleFeatureSelect(featureType, feature.id)}
                   >
                     <div className="feature-thumbnail">
                       <img
