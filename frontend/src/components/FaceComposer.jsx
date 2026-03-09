@@ -39,6 +39,20 @@ const LAYER_ORDER = [
   "mouths",
 ];
 
+const AGE_OPTIONS = ["Any", "Child", "Teenager", "20s", "30s", "40s", "50s", "60s", "70+"];
+const GENDER_OPTIONS = ["Any", "Male", "Female"];
+const ETHNICITY_OPTIONS = [
+  "Any",
+  "East Asian",
+  "South Asian",
+  "Southeast Asian",
+  "Black / African",
+  "White / Caucasian",
+  "Hispanic / Latino",
+  "Middle Eastern",
+  "Mixed / Other",
+];
+
 const FaceComposer = ({ onFaceComposed }) => {
   const [featureLibrary, setFeatureLibrary] = useState(null);
   const [selectedFeatures, setSelectedFeatures] = useState({});
@@ -49,6 +63,12 @@ const FaceComposer = ({ onFaceComposed }) => {
   const ganInterval = useRef(null);
   const pendingResult = useRef(null);
   const apiDone = useRef(false);
+
+  // Additional person details
+  const [age, setAge] = useState("Any");
+  const [gender, setGender] = useState("Any");
+  const [ethnicity, setEthnicity] = useState("Any");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   useEffect(() => {
     loadFeatureLibrary();
@@ -149,6 +169,10 @@ const FaceComposer = ({ onFaceComposed }) => {
           body: JSON.stringify({
             features: selectedFeatures,
             get_encoding: true,
+            age: age !== "Any" ? age : undefined,
+            gender: gender !== "Any" ? gender : undefined,
+            ethnicity: ethnicity !== "Any" ? ethnicity : undefined,
+            additional_notes: additionalNotes.trim() || undefined,
           }),
         },
       );
@@ -177,6 +201,10 @@ const FaceComposer = ({ onFaceComposed }) => {
       });
       setSelectedFeatures(resetSelection);
     }
+    setAge("Any");
+    setGender("Any");
+    setEthnicity("Any");
+    setAdditionalNotes("");
     setComposedSketchUrl(null);
     setError(null);
   };
@@ -341,6 +369,58 @@ const FaceComposer = ({ onFaceComposed }) => {
 
         {/* ---- Right: feature selectors ---- */}
         <div className="feature-selectors">
+          {/* Person details section */}
+          <div className="feature-category person-details">
+            <h3>Person Details (Optional)</h3>
+            <div className="details-grid">
+              <div className="detail-field">
+                <label htmlFor="detail-age">Age</label>
+                <select
+                  id="detail-age"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                >
+                  {AGE_OPTIONS.map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="detail-field">
+                <label htmlFor="detail-gender">Gender</label>
+                <select
+                  id="detail-gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                >
+                  {GENDER_OPTIONS.map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="detail-field">
+                <label htmlFor="detail-ethnicity">Ethnicity</label>
+                <select
+                  id="detail-ethnicity"
+                  value={ethnicity}
+                  onChange={(e) => setEthnicity(e.target.value)}
+                >
+                  {ETHNICITY_OPTIONS.map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="detail-field full-width">
+                <label htmlFor="detail-notes">Additional Notes</label>
+                <input
+                  id="detail-notes"
+                  type="text"
+                  placeholder='e.g. "scar on left cheek, beard, glasses"'
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
           {Object.entries(featureLibrary).map(([featureType, features]) => (
             <div key={featureType} className="feature-category">
               <h3>{featureType.replace("_", " ").toUpperCase()}</h3>
