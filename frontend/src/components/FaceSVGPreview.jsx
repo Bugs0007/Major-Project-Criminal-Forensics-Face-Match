@@ -165,21 +165,43 @@ const FaceSVGPreview = ({
 
         {/* Layer 2: Ears (behind face) */}
         {ears && (
-          <g className="feature-layer ears" filter="url(#softShadow)">
-            <path
-              d={ears.leftPath}
-              fill={skinTone}
-              stroke={adjustColor(skinTone, -35)}
-              strokeWidth="1"
-              className="ear-path left"
-            />
-            <path
-              d={ears.rightPath}
-              fill={skinTone}
-              stroke={adjustColor(skinTone, -35)}
-              strokeWidth="1"
-              className="ear-path right"
-            />
+          <g className="feature-layer ears">
+            {/* Left ear */}
+            <g className="ear-group left">
+              <path
+                d={ears.leftPath}
+                fill={skinTone}
+                stroke={adjustColor(skinTone, -30)}
+                strokeWidth="1"
+              />
+              {/* Inner ear detail */}
+              <ellipse
+                cx="20"
+                cy="115"
+                rx="4"
+                ry="8"
+                fill={adjustColor(skinTone, -15)}
+                opacity="0.6"
+              />
+            </g>
+            {/* Right ear */}
+            <g className="ear-group right">
+              <path
+                d={ears.rightPath}
+                fill={skinTone}
+                stroke={adjustColor(skinTone, -30)}
+                strokeWidth="1"
+              />
+              {/* Inner ear detail */}
+              <ellipse
+                cx="180"
+                cy="115"
+                rx="4"
+                ry="8"
+                fill={adjustColor(skinTone, -15)}
+                opacity="0.6"
+              />
+            </g>
           </g>
         )}
 
@@ -193,22 +215,83 @@ const FaceSVGPreview = ({
               strokeWidth="1.5"
               className="face-path"
             />
+            {/* Face contouring - temple shadows */}
+            <ellipse
+              cx="45"
+              cy="80"
+              rx="15"
+              ry="25"
+              fill={adjustColor(skinTone, -20)}
+              opacity="0.2"
+            />
+            <ellipse
+              cx="155"
+              cy="80"
+              rx="15"
+              ry="25"
+              fill={adjustColor(skinTone, -20)}
+              opacity="0.2"
+            />
+            {/* Cheek contour shadows */}
+            <ellipse
+              cx="40"
+              cy="140"
+              rx="12"
+              ry="30"
+              fill={adjustColor(skinTone, -15)}
+              opacity="0.25"
+            />
+            <ellipse
+              cx="160"
+              cy="140"
+              rx="12"
+              ry="30"
+              fill={adjustColor(skinTone, -15)}
+              opacity="0.25"
+            />
+            {/* Jawline shadow */}
+            <ellipse
+              cx="100"
+              cy="220"
+              rx="35"
+              ry="15"
+              fill={adjustColor(skinTone, -15)}
+              opacity="0.2"
+            />
             {/* Subtle cheek blush */}
             <ellipse
               cx="60"
-              cy="130"
-              rx="20"
-              ry="15"
-              fill="url(#cheekBlush)"
-              className="cheek left"
+              cy="125"
+              rx="18"
+              ry="12"
+              fill="#FFB6C1"
+              opacity="0.15"
             />
             <ellipse
               cx="140"
-              cy="130"
-              rx="20"
+              cy="125"
+              rx="18"
+              ry="12"
+              fill="#FFB6C1"
+              opacity="0.15"
+            />
+            {/* Forehead highlight */}
+            <ellipse
+              cx="100"
+              cy="60"
+              rx="30"
               ry="15"
-              fill="url(#cheekBlush)"
-              className="cheek right"
+              fill="white"
+              opacity="0.08"
+            />
+            {/* Nose bridge highlight */}
+            <ellipse
+              cx="100"
+              cy="115"
+              rx="6"
+              ry="20"
+              fill="white"
+              opacity="0.1"
             />
           </g>
         )}
@@ -218,91 +301,56 @@ const FaceSVGPreview = ({
           <g className="feature-layer eyes">
             {/* Left eye */}
             <g className="eye left">
+              {/* Eye socket shadow */}
               <ellipse
                 cx="70"
-                cy="100"
-                rx="16"
-                ry="11"
-                fill="white"
-                stroke="#e0e0e0"
-                strokeWidth="0.5"
+                cy="95"
+                rx="22"
+                ry="14"
+                fill={adjustColor(skinTone, -12)}
               />
-              <circle cx="70" cy="100" r="8" fill={eyeColor} className="iris" />
-              <circle cx="70" cy="100" r="4" fill="#1a1a1a" className="pupil" />
-              <circle
-                cx="72"
-                cy="98"
-                r="2.5"
-                fill="white"
-                opacity="0.9"
-                className="highlight"
-              />
-              <circle
-                cx="68"
-                cy="102"
-                r="1"
-                fill="white"
-                opacity="0.5"
-                className="highlight-small"
-              />
+              {/* Eye white using the actual eye shape */}
               <path
                 d={eyes.leftPath}
-                fill="none"
-                stroke={adjustColor(skinTone, -45)}
-                strokeWidth="2"
-                strokeLinecap="round"
-                className="eye-outline"
-              />
-            </g>
-            {/* Right eye */}
-            <g className="eye right">
-              <ellipse
-                cx="130"
-                cy="100"
-                rx="16"
-                ry="11"
-                fill="white"
-                stroke="#e0e0e0"
+                fill="#FAFAFA"
+                stroke={adjustColor(skinTone, -20)}
                 strokeWidth="0.5"
               />
-              <circle
+              {/* Iris */}
+              <circle cx="70" cy="95" r="6" fill={adjustColor(eyeColor, 15)} />
+              <circle cx="70" cy="95" r="5" fill={eyeColor} />
+              {/* Pupil */}
+              <circle cx="70" cy="95" r="2.5" fill="#0a0a0a" />
+              {/* Eye highlights */}
+              <circle cx="72" cy="93" r="1.8" fill="white" opacity="0.95" />
+              <circle cx="68" cy="97" r="0.8" fill="white" opacity="0.6" />
+            </g>
+            
+            {/* Right eye */}
+            <g className="eye right">
+              {/* Eye socket shadow */}
+              <ellipse
                 cx="130"
-                cy="100"
-                r="8"
-                fill={eyeColor}
-                className="iris"
+                cy="95"
+                rx="22"
+                ry="14"
+                fill={adjustColor(skinTone, -12)}
               />
-              <circle
-                cx="130"
-                cy="100"
-                r="4"
-                fill="#1a1a1a"
-                className="pupil"
-              />
-              <circle
-                cx="132"
-                cy="98"
-                r="2.5"
-                fill="white"
-                opacity="0.9"
-                className="highlight"
-              />
-              <circle
-                cx="128"
-                cy="102"
-                r="1"
-                fill="white"
-                opacity="0.5"
-                className="highlight-small"
-              />
+              {/* Eye white using the actual eye shape */}
               <path
                 d={eyes.rightPath}
-                fill="none"
-                stroke={adjustColor(skinTone, -45)}
-                strokeWidth="2"
-                strokeLinecap="round"
-                className="eye-outline"
+                fill="#FAFAFA"
+                stroke={adjustColor(skinTone, -20)}
+                strokeWidth="0.5"
               />
+              {/* Iris */}
+              <circle cx="130" cy="95" r="6" fill={adjustColor(eyeColor, 15)} />
+              <circle cx="130" cy="95" r="5" fill={eyeColor} />
+              {/* Pupil */}
+              <circle cx="130" cy="95" r="2.5" fill="#0a0a0a" />
+              {/* Eye highlights */}
+              <circle cx="132" cy="93" r="1.8" fill="white" opacity="0.95" />
+              <circle cx="128" cy="97" r="0.8" fill="white" opacity="0.6" />
             </g>
           </g>
         )}
@@ -326,43 +374,70 @@ const FaceSVGPreview = ({
         {/* Layer 6: Nose */}
         {nose && (
           <g className="feature-layer nose">
+            {/* Nose bridge line using actual feature path */}
             <path
               d={nose.path}
               fill="none"
-              stroke={adjustColor(skinTone, -35)}
-              strokeWidth="2"
+              stroke={adjustColor(skinTone, -25)}
+              strokeWidth="1.5"
               strokeLinecap="round"
-              className="nose-bridge"
             />
-            {nose.nostrilsPath && (
-              <path
-                d={nose.nostrilsPath}
-                fill={adjustColor(skinTone, -25)}
-                className="nostrils"
-              />
-            )}
+            {/* Nose bridge shadow (left side) */}
+            <path
+              d={nose.path}
+              fill="none"
+              stroke={adjustColor(skinTone, -15)}
+              strokeWidth="3"
+              strokeLinecap="round"
+              opacity="0.3"
+              transform="translate(-3, 0)"
+            />
+            {/* Nostrils using actual feature path */}
+            <path
+              d={nose.nostrilsPath}
+              fill={adjustColor(skinTone, -20)}
+              stroke={adjustColor(skinTone, -35)}
+              strokeWidth="0.5"
+            />
           </g>
         )}
 
         {/* Layer 7: Mouth */}
         {mouth && (
           <g className="feature-layer mouth">
+            {/* Lip shadow under bottom lip */}
+            <ellipse
+              cx="100"
+              cy="188"
+              rx="20"
+              ry="4"
+              fill={adjustColor(skinTone, -20)}
+              opacity="0.25"
+            />
+            {/* Main mouth shape using actual feature path */}
             <path
               d={mouth.path}
               fill={mouth.fill || "#C4928A"}
-              stroke={adjustColor(mouth.fill || "#C4928A", -25)}
-              strokeWidth="1"
-              className="lips"
+              stroke={adjustColor(mouth.fill || "#C4928A", -30)}
+              strokeWidth="0.5"
             />
-            {mouth.lipsPath && (
-              <path
-                d={mouth.lipsPath}
-                fill="none"
-                stroke={adjustColor(skinTone, -20)}
-                strokeWidth="0.5"
-                className="lip-line"
-              />
-            )}
+            {/* Lip line using actual feature lip path */}
+            <path
+              d={mouth.lipsPath}
+              fill="none"
+              stroke={adjustColor(mouth.fill || "#C4928A", -40)}
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+            {/* Lower lip highlight */}
+            <ellipse
+              cx="100"
+              cy="180"
+              rx="10"
+              ry="3"
+              fill="white"
+              opacity="0.12"
+            />
           </g>
         )}
 
