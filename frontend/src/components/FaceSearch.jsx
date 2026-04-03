@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { faceAPI } from "../services/api";
 import ImageCard from "./ImageCard";
@@ -21,49 +21,7 @@ const FaceSearch = ({ preloadedSketch }) => {
     }
   };
 
-  useEffect(() => {
-    if (selectedFile) {
-      performSearch();
-    }
-  }, [selectedFile]);
-
-  // Handle preloaded sketch from image-to-sketch feature
-  useEffect(() => {
-    const loadPreloadedSketch = async () => {
-      if (preloadedSketch && preloadedSketch.sketch_url) {
-        try {
-          // Fetch the image from the URL
-          const response = await fetch(preloadedSketch.sketch_url);
-          const blob = await response.blob();
-          
-          // Convert blob to File
-          const filename = preloadedSketch.original_filename || 'generated_sketch.png';
-          const file = new File([blob], filename, { type: blob.type || 'image/png' });
-          
-          // Set the file for search
-          setSelectedFile(file);
-          setPreviewUrl(preloadedSketch.sketch_url);
-          setError(null);
-          setResults(null);
-        } catch (err) {
-          console.error('Error loading preloaded sketch:', err);
-          setError('Failed to load generated sketch');
-        }
-      }
-    };
-
-    loadPreloadedSketch();
-  }, [preloadedSketch]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"],
-    },
-    multiple: false,
-  });
-
-  const performSearch = async () => {
+  const performSearch = useCallback(async () => {
     if (!selectedFile) {
       setError("Please select an image first");
       return;
@@ -85,7 +43,52 @@ const FaceSearch = ({ preloadedSketch }) => {
     } finally {
       setSearching(false);
     }
-  };
+  }, [selectedFile]);
+
+  useEffect(() => {
+    if (selectedFile) {
+      performSearch();
+    }
+  }, [selectedFile, performSearch]);
+
+  // Handle preloaded sketch from image-to-sketch feature
+  useEffect(() => {
+    const loadPreloadedSketch = async () => {
+      if (preloadedSketch && preloadedSketch.sketch_url) {
+        try {
+          // Fetch the image from the URL
+          const response = await fetch(preloadedSketch.sketch_url);
+          const blob = await response.blob();
+
+          // Convert blob to File
+          const filename =
+            preloadedSketch.original_filename || "generated_sketch.png";
+          const file = new File([blob], filename, {
+            type: blob.type || "image/png",
+          });
+
+          // Set the file for search
+          setSelectedFile(file);
+          setPreviewUrl(preloadedSketch.sketch_url);
+          setError(null);
+          setResults(null);
+        } catch (err) {
+          console.error("Error loading preloaded sketch:", err);
+          setError("Failed to load generated sketch");
+        }
+      }
+    };
+
+    loadPreloadedSketch();
+  }, [preloadedSketch]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"],
+    },
+    multiple: false,
+  });
 
   return (
     <div className="face-search">

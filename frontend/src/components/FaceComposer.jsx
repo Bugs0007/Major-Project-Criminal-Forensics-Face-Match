@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./FaceComposer.css";
+import FaceSVGPreview from "./FaceSVGPreview";
+import { getSvgFeatures } from "./featureData";
 
 /* ── GAN processing steps ────────────────────────────────────── */
 const GAN_STEPS = [
@@ -18,18 +20,8 @@ const GAN_STEPS = [
   { label: "Discriminator accepted — sketch is realistic!", phase: "accepted" },
 ];
 
-/* ── Feature preview layout ──────────────────────────────────── */
-const PREVIEW_POSITIONS = {
-  face_shapes: { top: "0%", left: "10%", width: "80%", height: "90%", z: 1 },
-  hair: { top: "0%", left: "12%", width: "76%", height: "30%", z: 2 },
-  ears: { top: "28%", left: "4%", width: "92%", height: "22%", z: 3 },
-  eyebrows: { top: "26%", left: "16%", width: "68%", height: "10%", z: 4 },
-  eyes: { top: "32%", left: "16%", width: "68%", height: "14%", z: 5 },
-  noses: { top: "46%", left: "34%", width: "32%", height: "22%", z: 6 },
-  mouths: { top: "64%", left: "24%", width: "52%", height: "14%", z: 7 },
-};
-
-const LAYER_ORDER = [
+/* ── Feature order for display ──────────────────────────────── */
+const FEATURE_ORDER = [
   "face_shapes",
   "hair",
   "ears",
@@ -39,7 +31,17 @@ const LAYER_ORDER = [
   "mouths",
 ];
 
-const AGE_OPTIONS = ["Any", "Child", "Teenager", "20s", "30s", "40s", "50s", "60s", "70+"];
+const AGE_OPTIONS = [
+  "Any",
+  "Child",
+  "Teenager",
+  "20s",
+  "30s",
+  "40s",
+  "50s",
+  "60s",
+  "70+",
+];
 const GENDER_OPTIONS = ["Any", "Male", "Female"];
 const ETHNICITY_OPTIONS = [
   "Any",
@@ -209,11 +211,6 @@ const FaceComposer = ({ onFaceComposed }) => {
     setError(null);
   };
 
-  /* ---------- placed features for preview ---------- */
-  const placedFeatures = LAYER_ORDER.filter(
-    (ft) => selectedFeatures[ft] != null,
-  );
-
   /* ---------- render ---------- */
   if (!featureLibrary) {
     return <div className="loading">Loading feature library...</div>;
@@ -233,37 +230,12 @@ const FaceComposer = ({ onFaceComposed }) => {
         {/* ---- Left: preview / GAN processing ---- */}
         <div className="composer-preview">
           <div className="preview-area">
-            {/* Idle — nothing selected */}
-            {!composing && !composedSketchUrl && selectedCount === 0 && (
-              <p className="canvas-hint">
-                Select features from the right panel
-              </p>
-            )}
-
-            {/* Sketch preview — features selected, not yet generated */}
-            {!composing && !composedSketchUrl && selectedCount > 0 && (
-              <div className="sketch-preview">
-                {placedFeatures.map((ft) => {
-                  const url = getThumbnailUrl(ft);
-                  const pos = PREVIEW_POSITIONS[ft];
-                  if (!url || !pos) return null;
-                  return (
-                    <img
-                      key={ft}
-                      className="preview-feature"
-                      src={url}
-                      alt={ft}
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                        width: pos.width,
-                        height: pos.height,
-                        zIndex: pos.z,
-                      }}
-                    />
-                  );
-                })}
-              </div>
+            {/* SVG Preview - always visible when not composing/showing result */}
+            {!composing && !composedSketchUrl && (
+              <FaceSVGPreview
+                selectedFeatures={selectedFeatures}
+                animated={true}
+              />
             )}
 
             {/* GAN processing animation */}
@@ -381,7 +353,9 @@ const FaceComposer = ({ onFaceComposed }) => {
                   onChange={(e) => setAge(e.target.value)}
                 >
                   {AGE_OPTIONS.map((o) => (
-                    <option key={o} value={o}>{o}</option>
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -393,7 +367,9 @@ const FaceComposer = ({ onFaceComposed }) => {
                   onChange={(e) => setGender(e.target.value)}
                 >
                   {GENDER_OPTIONS.map((o) => (
-                    <option key={o} value={o}>{o}</option>
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -405,7 +381,9 @@ const FaceComposer = ({ onFaceComposed }) => {
                   onChange={(e) => setEthnicity(e.target.value)}
                 >
                   {ETHNICITY_OPTIONS.map((o) => (
-                    <option key={o} value={o}>{o}</option>
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -421,40 +399,209 @@ const FaceComposer = ({ onFaceComposed }) => {
               </div>
             </div>
           </div>
-          {Object.entries(featureLibrary).map(([featureType, features]) => (
-            <div key={featureType} className="feature-category">
-              <h3>{featureType.replace("_", " ").toUpperCase()}</h3>
-              <div className="feature-options">
-                {features.map((feature) => (
-                  <div
-                    key={feature.id}
-                    className={`feature-option ${
-                      selectedFeatures[featureType] === feature.id
-                        ? "selected"
-                        : ""
-                    }`}
-                    onClick={() => handleFeatureSelect(featureType, feature.id)}
-                  >
-                    <div className="feature-thumbnail">
-                      <img
-                        src={feature.thumbnail}
-                        alt={feature.name}
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    </div>
-                    <span className="feature-label">{feature.name}</span>
-                  </div>
-                ))}
+
+          {/* Feature categories with SVG previews */}
+          {FEATURE_ORDER.map((featureType) => {
+            const backendFeatures = featureLibrary[featureType] || [];
+            const svgFeatures = getSvgFeatures(featureType);
+
+            if (backendFeatures.length === 0) return null;
+
+            return (
+              <div key={featureType} className="feature-category">
+                <h3>{featureType.replace("_", " ").toUpperCase()}</h3>
+                <div className="feature-options">
+                  {backendFeatures.map((feature, index) => {
+                    const svgFeature =
+                      svgFeatures[index] ||
+                      svgFeatures.find((f) => f.id === feature.id);
+                    return (
+                      <div
+                        key={feature.id}
+                        className={`feature-option ${
+                          selectedFeatures[featureType] === feature.id
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleFeatureSelect(featureType, feature.id)
+                        }
+                      >
+                        <div className="feature-thumbnail">
+                          <FeatureIcon
+                            featureType={featureType}
+                            feature={svgFeature}
+                          />
+                        </div>
+                        <span className="feature-label">{feature.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
+
+/**
+ * Renders a small SVG icon for a feature option
+ */
+const DEFAULT_SKIN = "#F5D6C6";
+const DEFAULT_HAIR = "#3D2314";
+const DEFAULT_EYE = "#4A3728";
+
+const FeatureIcon = ({ featureType, feature }) => {
+  if (!feature) {
+    return <div className="feature-icon-placeholder" />;
+  }
+
+  const getIconContent = () => {
+    switch (featureType) {
+      case "face_shapes":
+        return (
+          <path
+            d={feature.path}
+            fill={DEFAULT_SKIN}
+            stroke={adjustColorForIcon(DEFAULT_SKIN, -30)}
+            strokeWidth="2"
+            transform="translate(-10, 0) scale(0.55)"
+          />
+        );
+
+      case "hair":
+        if (!feature.path) {
+          // Bald option
+          return (
+            <text x="50" y="60" textAnchor="middle" fill="#666" fontSize="14">
+              Bald
+            </text>
+          );
+        }
+        return (
+          <>
+            {feature.backPath && (
+              <path
+                d={feature.backPath}
+                fill={adjustColorForIcon(DEFAULT_HAIR, -20)}
+                transform="translate(-10, 0) scale(0.55)"
+              />
+            )}
+            <path
+              d={feature.path}
+              fill={DEFAULT_HAIR}
+              transform="translate(-10, 0) scale(0.55)"
+            />
+          </>
+        );
+
+      case "eyes":
+        return (
+          <g transform="translate(-25, 5) scale(0.75)">
+            <ellipse
+              cx="70"
+              cy="50"
+              rx="14"
+              ry="9"
+              fill="white"
+              stroke="#ddd"
+              strokeWidth="0.5"
+            />
+            <circle cx="70" cy="50" r="6" fill={DEFAULT_EYE} />
+            <circle cx="70" cy="50" r="3" fill="#1a1a1a" />
+            <circle cx="72" cy="48" r="2" fill="white" opacity="0.8" />
+            <path
+              d={feature.leftPath?.replace(/95/g, "50")}
+              fill="none"
+              stroke="#555"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </g>
+        );
+
+      case "eyebrows":
+        return (
+          <g transform="translate(-15, 20) scale(0.8)">
+            <path d={feature.leftPath} fill={DEFAULT_HAIR} />
+          </g>
+        );
+
+      case "noses":
+        return (
+          <g transform="translate(-5, -40) scale(0.7)">
+            <path
+              d={feature.path}
+              fill="none"
+              stroke="#888"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            {feature.nostrilsPath && (
+              <path d={feature.nostrilsPath} fill="#aaa" />
+            )}
+          </g>
+        );
+
+      case "mouths":
+        return (
+          <g transform="translate(-5, -125) scale(0.7)">
+            <path
+              d={feature.path}
+              fill={feature.fill || "#C4928A"}
+              stroke={adjustColorForIcon(feature.fill || "#C4928A", -20)}
+              strokeWidth="1"
+            />
+          </g>
+        );
+
+      case "ears":
+        return (
+          <g transform="translate(30, -35) scale(0.8)">
+            <path
+              d={feature.leftPath}
+              fill={DEFAULT_SKIN}
+              stroke={adjustColorForIcon(DEFAULT_SKIN, -30)}
+              strokeWidth="1"
+            />
+          </g>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <svg viewBox="0 0 100 100" className="feature-icon-svg">
+      {getIconContent()}
+    </svg>
+  );
+};
+
+/**
+ * Adjusts a hex color by a given amount
+ */
+function adjustColorForIcon(hex, amount) {
+  if (!hex || typeof hex !== "string") return "#888888";
+  hex = hex.replace("#", "");
+
+  let r = parseInt(hex.slice(0, 2), 16);
+  let g = parseInt(hex.slice(2, 4), 16);
+  let b = parseInt(hex.slice(4, 6), 16);
+
+  if (isNaN(r)) r = 128;
+  if (isNaN(g)) g = 128;
+  if (isNaN(b)) b = 128;
+
+  r = Math.max(0, Math.min(255, r + amount));
+  g = Math.max(0, Math.min(255, g + amount));
+  b = Math.max(0, Math.min(255, b + amount));
+
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
 
 export default FaceComposer;
