@@ -1,0 +1,350 @@
+/* =================================================================
+   FaceSVGPreview - Game-style Character Builder Preview
+   ================================================================= */
+
+.face-svg-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 350px;
+  min-height: 350px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, #1e1e2e 0%, #12121a 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(245, 158, 11, 0.2);
+  overflow: hidden;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.face-svg-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(245, 158, 11, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 70% 80%,
+      rgba(99, 102, 241, 0.05) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+}
+
+/* Empty state */
+.face-svg-preview.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face-svg-preview .empty-state {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+}
+
+.face-svg-preview .placeholder-icon {
+  width: 80px;
+  height: 100px;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+  animation: floatIdle 3s ease-in-out infinite;
+}
+
+@keyframes floatIdle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.face-svg-preview .empty-state p {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #9ca3af;
+}
+
+/* Main SVG */
+.face-svg-preview .face-svg {
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+/* Guide circle - subtle reference */
+.face-svg-preview .guide-circle {
+  opacity: 1;
+}
+
+/* Feature layers - base styles */
+.face-svg-preview .feature-layer {
+  transition: opacity 0.3s ease;
+}
+
+/* Animated mode - smooth feature transitions */
+.face-svg-preview.animated .feature-layer path,
+.face-svg-preview.animated .feature-layer ellipse,
+.face-svg-preview.animated .feature-layer circle {
+  transition:
+    d 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    fill 0.3s ease,
+    stroke 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Face layer */
+.face-svg-preview .face-path {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Cheeks - subtle blush */
+.face-svg-preview .cheek {
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+}
+
+/* Eyes */
+.face-svg-preview .eye {
+  /* Subtle hover animation for interactivity feel */
+}
+
+.face-svg-preview .eye .iris {
+  transition: fill 0.3s ease;
+}
+
+.face-svg-preview .eye .pupil {
+  transition: transform 0.2s ease;
+  transform-origin: center;
+}
+
+.face-svg-preview .eye .highlight {
+  animation: eyeShine 3s ease-in-out infinite;
+}
+
+@keyframes eyeShine {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.face-svg-preview .eye-outline {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Eyebrows */
+.face-svg-preview .eyebrow {
+  transition:
+    fill 0.3s ease,
+    d 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Nose */
+.face-svg-preview .nose-bridge {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.face-svg-preview .nostrils {
+  opacity: 0.8;
+}
+
+/* Mouth/Lips */
+.face-svg-preview .lips {
+  transition:
+    fill 0.3s ease,
+    d 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hair */
+.face-svg-preview .hair-path {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+}
+
+.face-svg-preview .hair-path.back {
+  opacity: 0.95;
+}
+
+/* Ears */
+.face-svg-preview .ear-path {
+  transition:
+    fill 0.3s ease,
+    d 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* =================================================================
+   Color Picker Styles (for use in FaceComposer)
+   ================================================================= */
+
+.color-picker-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(30, 30, 46, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.color-picker-section h4 {
+  color: #f59e0b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.color-picker-row:last-child {
+  margin-bottom: 0;
+}
+
+.color-picker-row label {
+  color: #a8b8d8;
+  font-size: 0.85rem;
+  min-width: 80px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.color-swatch.selected {
+  border-color: #f59e0b;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+}
+
+/* =================================================================
+   Feature Icon Thumbnails (for selection cards)
+   ================================================================= */
+
+.feature-icon-svg {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.feature-icon-svg path,
+.feature-icon-svg ellipse,
+.feature-icon-svg circle {
+  transition: all 0.2s ease;
+}
+
+/* Hover state for feature cards */
+.feature-option:hover .feature-icon-svg path,
+.feature-option:hover .feature-icon-svg ellipse {
+  filter: brightness(1.1);
+}
+
+.feature-option.selected .feature-icon-svg path,
+.feature-option.selected .feature-icon-svg ellipse {
+  filter: brightness(1.2) drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
+}
+
+/* =================================================================
+   Responsive adjustments
+   ================================================================= */
+
+@media (max-width: 768px) {
+  .face-svg-preview {
+    max-width: 280px;
+  }
+
+  .color-swatches {
+    gap: 4px;
+  }
+
+  .color-swatch {
+    width: 24px;
+    height: 24px;
+  }
+
+  .color-picker-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* =================================================================
+   Animation for feature changes
+   ================================================================= */
+
+@keyframes featurePop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.face-svg-preview.animated .feature-layer {
+  animation: featurePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Glow effect on preview area */
+.face-svg-preview::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15) 0%,
+    transparent 50%,
+    rgba(99, 102, 241, 0.1) 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.face-svg-preview:hover::after {
+  opacity: 1;
+}
