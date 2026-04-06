@@ -142,16 +142,6 @@ const FaceComposer = ({ onFaceComposed }) => {
     (f) => f !== null,
   ).length;
 
-  /* ---------- find thumbnail URL ---------- */
-  const getThumbnailUrl = (featureType) => {
-    const featureId = selectedFeatures[featureType];
-    if (!featureId || !featureLibrary) return null;
-    const feature = featureLibrary[featureType]?.find(
-      (f) => f.id === featureId,
-    );
-    return feature?.thumbnail || null;
-  };
-
   /* ---------- compose ---------- */
   const handleComposeFace = async () => {
     if (selectedCount === 0) {
