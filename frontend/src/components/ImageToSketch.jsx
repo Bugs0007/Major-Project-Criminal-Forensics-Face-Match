@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import "./ImageToSketch.css";
+import { buildApiUrl } from "../services/api";
 
 const AUTO_SKETCH_OPTIONS = Object.freeze({
   method: "pencil",
@@ -34,7 +35,7 @@ const ImageToSketch = ({ onSketchCreated }) => {
       formData.append("get_encoding", "true");
 
       const response = await fetch(
-        "http://localhost:8000/api/faces/sketch/image-to-sketch/",
+        buildApiUrl("/faces/sketch/image-to-sketch/"),
         {
           method: "POST",
           body: formData,

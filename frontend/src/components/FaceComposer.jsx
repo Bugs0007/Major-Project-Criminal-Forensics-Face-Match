@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./FaceComposer.css";
 import FaceSVGPreview from "./FaceSVGPreview";
 import { getSvgFeatures } from "./featureData";
+import { buildApiUrl } from "../services/api";
 
 /* ── GAN processing steps ────────────────────────────────────── */
 const GAN_STEPS = [
@@ -108,7 +109,7 @@ const FaceComposer = ({ onFaceComposed }) => {
   const loadFeatureLibrary = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8000/api/faces/sketch/feature-library/",
+        buildApiUrl("/faces/sketch/feature-library/"),
       );
       const data = await response.json();
 
@@ -163,21 +164,18 @@ const FaceComposer = ({ onFaceComposed }) => {
     setComposedSketchUrl(null);
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/faces/sketch/compose-face/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            features: selectedFeatures,
-            get_encoding: true,
-            age: age !== "Any" ? age : undefined,
-            gender: gender !== "Any" ? gender : undefined,
-            ethnicity: ethnicity !== "Any" ? ethnicity : undefined,
-            additional_notes: additionalNotes.trim() || undefined,
-          }),
-        },
-      );
+      const response = await fetch(buildApiUrl("/faces/sketch/compose-face/"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          features: selectedFeatures,
+          get_encoding: true,
+          age: age !== "Any" ? age : undefined,
+          gender: gender !== "Any" ? gender : undefined,
+          ethnicity: ethnicity !== "Any" ? ethnicity : undefined,
+          additional_notes: additionalNotes.trim() || undefined,
+        }),
+      });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
