@@ -1,0 +1,8 @@
+{
+  "name": "major-project-frontend-root",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm --prefix frontend install",
+    "build": "npm --prefix frontend run build"
+  }
+}
