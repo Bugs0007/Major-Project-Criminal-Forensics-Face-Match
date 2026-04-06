@@ -1,12 +1,5 @@
 import React, { useMemo } from "react";
 import {
-  FACE_SHAPES,
-  HAIR_STYLES,
-  EYES,
-  EYEBROWS,
-  NOSES,
-  MOUTHS,
-  EARS,
   mapBackendIdToSvgFeature,
 } from "./featureData";
 import "./FaceSVGPreview.css";
