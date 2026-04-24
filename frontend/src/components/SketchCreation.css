@@ -91,6 +91,36 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* =================================================================
+   Monochrome Theme Overrides
+   ================================================================= */
+
+.method-selector button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(110, 110, 110, 0.05) 100%), linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(120, 120, 120, 0.12));
+  color: #f2f2f2;
+}
+
+.method-selector button::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+}
+
+.method-selector button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(120, 120, 120, 0.08) 100%), linear-gradient(135deg, #ffffff, #bdbdbd);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.12);
+  color: #050505;
+}
+
+.method-selector button.active {
+  background: linear-gradient(135deg, #ffffff 0%, #cfcfcf 100%);
+  color: #050505;
+  box-shadow: 0 10px 30px rgba(255,255,255,0.16), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.method-selector button.active::after {
+  background: #ffffff;
+  box-shadow: 0 0 12px rgba(255,255,255,0.24);
+}
+
 
 
 

@@ -3,9 +3,9 @@ import "./ImageCard.css";
 
 const ImageCard = ({ result }) => {
   const getSimilarityColor = (similarity) => {
-    if (similarity >= 80) return "#4caf50"; // Green
-    if (similarity >= 60) return "#ff9800"; // Orange
-    return "#f44336"; // Red
+    if (similarity >= 80) return "#f3f3f3";
+    if (similarity >= 60) return "#b8b8b8";
+    return "#6e6e6e";
   };
 
   return (

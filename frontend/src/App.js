@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import HomeScreen from "./components/HomeScreen";
 import FaceUpload from "./components/FaceUpload";
 import FaceSearch from "./components/FaceSearch";
 import SketchCreation from "./components/SketchCreation";
 import "./App.css";
 
 function App() {
-  const [activeTab, setActiveTab] = useState("search");
+  const [activeTab, setActiveTab] = useState("home");
   const [sketchForSearch, setSketchForSearch] = useState(null);
 
   const handleSketchReady = (sketchData) => {
@@ -25,6 +26,12 @@ function App() {
       </header>
 
       <nav className="app-nav">
+        <button
+          className={activeTab === "home" ? "active" : ""}
+          onClick={() => setActiveTab("home")}
+        >
+          Home
+        </button>
         <button
           className={activeTab === "search" ? "active" : ""}
           onClick={() => setActiveTab("search")}
@@ -46,6 +53,7 @@ function App() {
       </nav>
 
       <main className="app-main">
+        {activeTab === "home" && <HomeScreen />}
         {activeTab === "search" && (
           <FaceSearch preloadedSketch={sketchForSearch} />
         )}
@@ -54,10 +62,6 @@ function App() {
         )}
         {activeTab === "upload" && <FaceUpload />}
       </main>
-
-      <footer className="app-footer">
-        <p>Built with Django, React, OpenCV, and face_recognition</p>
-      </footer>
     </div>
   );
 }

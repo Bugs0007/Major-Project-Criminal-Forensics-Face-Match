@@ -1,0 +1,207 @@
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.home-hero {
+  position: relative;
+  min-height: 70vh;
+  border-radius: 28px;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+}
+
+.home-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.72) 62%, rgba(0, 0, 0, 0.9) 100%),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 28%);
+}
+
+.home-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.16;
+}
+
+.home-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 70vh;
+  padding: 3rem;
+}
+
+.home-badge {
+  width: fit-content;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.home-content h2 {
+  max-width: 760px;
+  color: #ffffff;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  line-height: 0.92;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.home-lead {
+  max-width: 660px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 720px;
+  margin-top: 2rem;
+}
+
+.home-stat {
+  padding: 1.15rem 1.25rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.home-stat span {
+  display: block;
+  color: #ffffff;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.home-stat small {
+  display: block;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 0.15rem;
+}
+
+.home-panel {
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.96), rgba(8, 8, 8, 0.98));
+  padding: 2rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.home-panel-head {
+  max-width: 720px;
+  margin-bottom: 1.75rem;
+}
+
+.home-panel-kicker {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.home-panel-head h3 {
+  color: #ffffff;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.home-panel-head p {
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.8;
+}
+
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.home-card {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1.35rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.home-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.home-card-top span {
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.home-card h4 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  margin: 0.8rem 0 0.55rem;
+}
+
+.home-card p {
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1024px) {
+  .home-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    min-height: 60vh;
+    padding: 2rem 1.4rem;
+  }
+
+  .home-panel {
+    padding: 1.4rem;
+  }
+
+  .home-stats,
+  .home-features {
+    grid-template-columns: 1fr;
+  }
+}

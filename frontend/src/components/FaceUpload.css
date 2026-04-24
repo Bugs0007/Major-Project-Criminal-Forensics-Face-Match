@@ -243,6 +243,83 @@
   75% { transform: translateX(-3px); }
 }
 
+/* =================================================================
+   Monochrome Theme Overrides
+   ================================================================= */
+
+.face-upload {
+  background: linear-gradient(135deg, rgba(18,18,18,0.9) 0%, rgba(9,9,9,0.94) 50%, rgba(3,3,3,0.95) 100%);
+  box-shadow: 0 25px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.face-upload::before {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02) 0%, transparent 50%);
+}
+
+.face-upload::after {
+  background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.02) 50%, transparent 60%);
+}
+
+.face-upload h2 {
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(255,255,255,0.12);
+}
+
+.face-upload h2::after {
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+}
+
+.face-upload .dropzone,
+.face-upload .dropzone:hover,
+.face-upload .dropzone.active {
+  background: linear-gradient(135deg, rgba(20,20,20,0.88) 0%, rgba(8,8,8,0.92) 100%);
+  color: #d3d3d3;
+}
+
+.face-upload .dropzone::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+}
+
+.face-upload .dropzone,
+.metadata-form input,
+.metadata-form textarea {
+  border-color: rgba(255,255,255,0.12);
+}
+
+.face-upload .preview-image {
+  border-color: rgba(255,255,255,0.7);
+  box-shadow: 0 0 28px rgba(255,255,255,0.08), 0 10px 25px rgba(0,0,0,0.34);
+}
+
+.metadata-form input,
+.metadata-form textarea {
+  background: linear-gradient(135deg, rgba(12,12,12,0.9) 0%, rgba(22,22,22,0.85) 100%);
+  color: #ededed;
+}
+
+.metadata-form input::placeholder,
+.metadata-form textarea::placeholder {
+  color: #888888;
+}
+
+.metadata-form input:focus,
+.metadata-form textarea:focus {
+  background: linear-gradient(135deg, rgba(14,14,14,0.95) 0%, rgba(28,28,28,0.9) 100%);
+  box-shadow: 0 0 20px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.upload-button {
+  background: linear-gradient(135deg, #ffffff 0%, #cbcbcb 100%);
+  color: #050505;
+  box-shadow: 0 8px 25px rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.upload-button:hover:not(:disabled) {
+  box-shadow: 0 12px 35px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.28);
+}
+
 
 
 

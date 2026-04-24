@@ -415,6 +415,77 @@
   .result-actions > div { flex-direction: column; }
 }
 
+/* =================================================================
+   Monochrome Theme Overrides
+   ================================================================= */
+
+.image-to-sketch h2,
+.sketch-options h3,
+.sketch-result h3 {
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(255,255,255,0.12);
+}
+
+.image-to-sketch h2::after {
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+}
+
+.image-to-sketch > p,
+.sketch-options label,
+.comparison-item p,
+.actions-hint {
+  color: #cfcfcf;
+}
+
+.image-to-sketch .dropzone,
+.image-to-sketch .dropzone:hover,
+.image-to-sketch .dropzone.active,
+.sketch-options,
+.sketch-result {
+  background: linear-gradient(135deg, rgba(18,18,18,0.9) 0%, rgba(8,8,8,0.92) 100%);
+  color: #d9d9d9;
+  border-color: rgba(255,255,255,0.12);
+}
+
+.image-to-sketch .dropzone::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+}
+
+.image-to-sketch .preview-image,
+.comparison-item img {
+  border-color: rgba(255,255,255,0.65);
+  box-shadow: 0 0 24px rgba(255,255,255,0.08), 0 15px 35px rgba(0,0,0,0.34);
+}
+
+.sketch-options select {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: #ededed;
+}
+
+.sketch-options select:focus {
+  border-color: rgba(255,255,255,0.4);
+  box-shadow: 0 0 15px rgba(255,255,255,0.12);
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: #ffffff;
+}
+
+.generate-button,
+.image-to-sketch .use-button,
+.download-button {
+  background: linear-gradient(135deg, #ffffff 0%, #cfcfcf 100%);
+  color: #050505;
+  box-shadow: 0 8px 25px rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.generate-button:hover:not(:disabled),
+.image-to-sketch .use-button:hover,
+.download-button:hover {
+  box-shadow: 0 12px 35px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.24);
+}
+
 
 
 

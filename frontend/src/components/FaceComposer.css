@@ -1139,3 +1139,113 @@
     font-size: 1.1rem;
   }
 }
+
+/* =================================================================
+   Monochrome Theme Overrides
+   ================================================================= */
+
+.face-composer h2,
+.feature-category h3,
+.selected-count,
+.gan-step-text,
+.loading {
+  color: #ffffff;
+  text-shadow: 0 0 14px rgba(255,255,255,0.1);
+}
+
+.face-composer h2::after {
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+}
+
+.face-composer > p,
+.detail-field label,
+.feature-label,
+.loading,
+.empty-state,
+.color-picker-row label {
+  color: #c9c9c9;
+}
+
+.feature-category,
+.preview-area,
+.gan-processing,
+.selected-summary {
+  background: linear-gradient(135deg, rgba(18,18,18,0.88) 0%, rgba(8,8,8,0.94) 100%);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.feature-category:hover,
+.feature-option:hover {
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 12px 24px rgba(255,255,255,0.06);
+}
+
+.detail-field select,
+.detail-field input[type="text"] {
+  border-color: rgba(255,255,255,0.12);
+  background-color: rgba(255,255,255,0.04);
+  color: #ededed;
+}
+
+.detail-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+.detail-field select option {
+  background: #0d0d0d;
+}
+
+.detail-field select:focus,
+.detail-field input[type="text"]:focus {
+  border-color: rgba(255,255,255,0.35);
+  box-shadow: 0 0 12px rgba(255,255,255,0.1);
+}
+
+.detail-field input[type="text"]::placeholder {
+  color: #888888;
+}
+
+.feature-option.selected,
+.color-swatch.selected,
+.gan-node.active,
+.gan-node.done {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 18px rgba(255,255,255,0.08);
+}
+
+.compose-button {
+  background: linear-gradient(135deg, #ffffff 0%, #cbcbcb 100%);
+  color: #050505;
+  box-shadow: 0 6px 20px rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.compose-button:hover:not(:disabled) {
+  box-shadow: 0 10px 30px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.24);
+}
+
+.reset-button {
+  background: rgba(255,255,255,0.07);
+  color: #d0d0d0;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.reset-button:hover:not(:disabled) {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.3);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(255,255,255,0.08);
+}
+
+.use-button {
+  border-color: rgba(255,255,255,0.45);
+  color: #ffffff;
+}
+
+.use-button::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(120,120,120,0.08));
+}
+
+.use-button:hover {
+  box-shadow: 0 0 20px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
+}
