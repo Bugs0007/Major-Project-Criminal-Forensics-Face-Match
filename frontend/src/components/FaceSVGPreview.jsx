@@ -143,7 +143,7 @@ const FaceSVGPreview = ({
         </defs>
 
         {/* Background circle for composition */}
-        <circle cx="100" cy="130" r="95" fill="rgba(255,255,255,0.02)" stroke="rgba(245,158,11,0.08)" strokeWidth="1" className="guide-circle" />
+        <circle cx="100" cy="130" r="95" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" className="guide-circle" />
 
         {/* Layer 1: Hair back (for styles that go behind face) */}
         {hairStyle?.backPath && (

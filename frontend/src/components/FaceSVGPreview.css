@@ -348,3 +348,48 @@
 .face-svg-preview:hover::after {
   opacity: 1;
 }
+
+/* =================================================================
+   Monochrome Theme Overrides
+   ================================================================= */
+
+.face-svg-preview {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(145deg, #141414 0%, #050505 100%);
+}
+
+.face-svg-preview::before {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+}
+
+.color-picker-section h4 {
+  color: #ffffff;
+}
+
+.color-picker-row label,
+.face-svg-preview .empty-state p {
+  color: #c7c7c7;
+}
+
+.color-swatch.selected {
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.feature-option.selected .feature-icon-svg path,
+.feature-option.selected .feature-icon-svg ellipse {
+  filter: brightness(1.1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+}
+
+.face-svg-preview::after {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+}
